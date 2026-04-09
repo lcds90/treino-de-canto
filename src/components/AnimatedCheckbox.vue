@@ -163,11 +163,12 @@ watch(() => props.modelValue, (newValue) => {
 .animated-checkbox-wrapper {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   cursor: pointer;
   position: relative;
   min-width: 24px;
   min-height: 24px;
+  width: 100%;
 }
 
 .checkbox-container {
