@@ -116,7 +116,7 @@
           @click="() => handleSave()"
         >
           <q-list>
-            <q-item clickable v-close-popup @click="() => handleSave(true)">
+            <q-item clickable @click="() => handleSave(true)">
               <q-item-section avatar>
                 <q-avatar icon="save" color="positive" text-color="white" />
               </q-item-section>
@@ -208,6 +208,10 @@ const handleSave = async (preventClose?: boolean) => {
         updatedAt: new Date(),
       } as Omit<RoutineTask, 'id'>);
     }
+    if (preventClose) {
+      resetForm();
+      return;
+    };
 
     // Animação de sucesso (mesma de antes)
     gsap.to(dialogCardRef.value.$el, {
@@ -216,7 +220,6 @@ const handleSave = async (preventClose?: boolean) => {
       duration: 0.4,
       ease: 'back.in(1.7)',
       onComplete: () => {
-        if (preventClose) return;
         isOpen.value = false;
         emit('saved');
       },
