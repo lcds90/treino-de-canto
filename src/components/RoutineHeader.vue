@@ -1,7 +1,7 @@
 <template>
   <div ref="headerRef" class="text-center q-mb-xl q-mt-lg">
     <h1 class="text-h4 text-weight-bold text-primary q-mb-sm">🎧 Hora de Soltar a Voz! 🎶</h1>
-    <p class="text-subtitle1 text-grey-7">
+    <p class="text-subtitle1">
       Siga as instruções de cada vídeo e marque os exercícios concluídos.
     </p>
   </div>

@@ -1,7 +1,7 @@
 <template>
   <q-card
     ref="addCardRef"
-    class="routine-add-card flex flex-center text-grey-6 cursor-pointer"
+    class="routine-add-card flex flex-center cursor-pointer"
     flat
     @click="emit('click')"
   >
@@ -29,7 +29,7 @@ onMounted(() => {
     duration: 1.5,
     repeat: -1,
     yoyo: true,
-    ease: 'sine.inOut'
+    ease: 'sine.inOut',
   });
 });
 </script>
@@ -41,7 +41,9 @@ onMounted(() => {
   border: 3px dashed #e0e0e0;
   background-color: transparent;
   border-radius: 16px;
-  transition: border-color 0.3s ease, color 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .routine-add-card:hover {

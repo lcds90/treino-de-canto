@@ -1,6 +1,5 @@
 <template>
-  <q-page class="bg-grey-1 q-pa-md">
-
+  <q-page class="q-pa-md">
     <div v-if="isReadOnly" class="q-mb-md">
       <q-btn
         flat
@@ -16,15 +15,18 @@
       <h1 class="text-h4 text-weight-bold text-primary q-mb-sm">
         {{ isReadOnly ? '📋 Resumo do Treino' : '🎧 Hora de Soltar a Voz! 🎶' }}
       </h1>
-      <p class="text-subtitle1 text-grey-7" v-if="!isReadOnly">
+      <p class="text-subtitle1" v-if="!isReadOnly">
         Siga as instruções de cada vídeo e marque os exercícios concluídos.
       </p>
-      <p class="text-subtitle1 text-grey-7" v-else>
-        Visualizando o registro de um treino finalizado.
-      </p>
+      <p class="text-subtitle1" v-else>Visualizando o registro de um treino finalizado.</p>
     </div>
 
-    <q-banner inline-actions rounded class="banner-width" v-if="!isReadOnly && workoutStore.hasTrainedToday">
+    <q-banner
+      inline-actions
+      rounded
+      class="banner-width"
+      v-if="!isReadOnly && workoutStore.hasTrainedToday"
+    >
       <p class="text-body2 q-mb-none">Hoje um treino já foi registrado! 💪</p>
       <p class="text-caption q-mb-none">Mas sinta-se livre para treinar mais! 🎶</p>
       <template v-slot:action>
@@ -47,7 +49,6 @@
     <div style="height: 100px; width: 100%"></div>
 
     <RoutineActions v-if="!isReadOnly" @finish="handleFinish" />
-
   </q-page>
 </template>
 
@@ -90,7 +91,7 @@ const currentTasks = computed(() => {
 
 const onFetchData = async () => {
   if (isReadOnly.value) {
-    const session = workoutStore.sessions.find(s => s.id === workoutId.value);
+    const session = workoutStore.sessions.find((s) => s.id === workoutId.value);
     if (session) {
       snapshotTasks.value = session.tasksSnapshot;
     } else {
@@ -103,9 +104,13 @@ const onFetchData = async () => {
   await fetchTasks();
 };
 
-watch(() => route.params.id, async () => {
-  await onFetchData();
-}, { immediate: true });
+watch(
+  () => route.params.id,
+  async () => {
+    await onFetchData();
+  },
+  { immediate: true },
+);
 
 const goBack = () => {
   // router.back() garante que o usuário volta exatamente para a aba anterior
@@ -129,7 +134,6 @@ const handleFinish = async (workoutData: any) => {
 .banner-width {
   max-width: 600px;
   margin: 0 auto;
-  color: white;
-  background-color: var(--q-accent, #e0f7fa);
+  background-color: var(--q-info, #e0f7fa);
 }
 </style>

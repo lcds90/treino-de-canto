@@ -1,6 +1,6 @@
 <template>
   <q-card class="routine-card shadow-4 text-left" bordered>
-    <q-card-section class="bg-secondary text-white row items-center justify-between">
+    <q-card-section class="bg-accent text-white row items-center justify-between">
       <div class="row items-center">
         <q-btn
           v-if="!readOnly"
@@ -79,7 +79,7 @@
 
     <q-card-section
       v-else
-      class="bg-grey-2 text-center q-py-xl flex flex-center column"
+      class="text-center q-py-xl flex flex-center column"
       style="min-height: 200px"
     >
       <q-icon
@@ -88,7 +88,7 @@
         :color="getPlatformColor(task.platform)"
         class="q-mb-sm"
       />
-      <div class="text-subtitle1 text-weight-medium text-grey-8 q-mb-md">
+      <div class="text-subtitle1 text-weight-medium q-mb-md">
         Esta aula está hospedada na <strong>{{ getPlatformName(task.platform) }}</strong>
       </div>
       <q-btn
@@ -105,7 +105,7 @@
 
     <q-card-section>
       <div class="text-subtitle2 text-primary q-mb-sm">📝 Instruções:</div>
-      <p class="text-body1 text-grey-8">
+      <p class="text-body1">
         {{ task.instructions }}
       </p>
     </q-card-section>
@@ -122,7 +122,7 @@
           tag="label"
           v-ripple="!readOnly"
           class="checklist-item q-mb-sm rounded-borders"
-          :class="{ 'bg-green-1': item.done, 'pointer-events-none': readOnly }"
+          :class="{ 'pointer-events-none': readOnly }"
         >
           <q-item-section class="row items-start">
             <AnimatedCheckbox
@@ -138,7 +138,7 @@
     <q-separator v-if="task.createdAt || task.updatedAt" />
     <q-card-section
       v-if="task.createdAt || task.updatedAt"
-      class="q-py-sm bg-grey-1 row justify-between text-caption text-grey-6"
+      class="q-py-sm row justify-between text-caption"
     >
       <div v-if="task.createdAt" class="row items-center">
         <q-icon name="event" class="q-mr-xs" size="xs" />
@@ -326,13 +326,13 @@ const formatDate = (dateString?: string) => {
 }
 
 .checklist-item {
-  transition: background-color 0.3s ease;
+  transition: filter 0.3s ease;
   border: 1px solid transparent;
   overflow: visible !important;
 }
 
 .checklist-item:hover {
-  background-color: #f5f5f5;
+  filter: brightness(0.98);
   border-color: #e0e0e0;
 }
 

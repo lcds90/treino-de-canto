@@ -180,7 +180,7 @@ const onTaskSaved = () => {
 /* Classe aplicada visualmente ao card enquanto ele está flutuando (sendo arrastado) */
 .ghost-card {
   opacity: 0.4;
-  background-color: #f0f0f0;
+  filter: brightness(0.9);
   border: 2px dashed var(--q-primary);
   border-radius: 16px;
 }

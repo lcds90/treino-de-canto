@@ -1,27 +1,23 @@
 <template>
   <div ref="cardRef" class="best-day-container flex flex-center column q-pa-md">
-
     <template v-if="bestDay">
       <div ref="iconRef" class="trophy-icon text-warning">🏆</div>
-      <div class="text-h5 text-weight-bolder text-grey-9 q-mt-sm text-capitalize">
+      <div class="text-h5 text-weight-bolder q-mt-sm text-capitalize">
         {{ formattedDate }}
       </div>
-      <div class="text-subtitle2 text-grey-6 q-mt-xs text-center">
+      <div class="text-subtitle2  q-mt-xs text-center">
         <span class="text-positive text-weight-bold">{{ bestDay.completed }} completos</span>
         <span v-if="bestDay.partial > 0">, {{ bestDay.partial }} parciais</span>
       </div>
     </template>
 
     <template v-else>
-      <div ref="iconRef" class="trophy-icon" style="filter: grayscale(1); opacity: 0.5;">🎯</div>
-      <div class="text-h6 text-weight-bolder text-grey-6 q-mt-sm">
-        Sem Recordes
-      </div>
-      <div class="text-caption text-grey-5 q-mt-xs text-center">
+      <div ref="iconRef" class="trophy-icon" style="filter: grayscale(1); opacity: 0.5">🎯</div>
+      <div class="text-h6 text-weight-bolder  q-mt-sm">Sem Recordes</div>
+      <div class="text-caption  q-mt-xs text-center">
         Faça seu primeiro exercício completo hoje!
       </div>
     </template>
-
   </div>
 </template>
 
@@ -30,7 +26,7 @@ import { ref, onMounted, computed } from 'vue';
 import gsap from 'gsap';
 
 const props = defineProps<{
-  bestDay: { date: string, completed: number, partial: number } | null
+  bestDay: { date: string; completed: number; partial: number } | null;
 }>();
 
 const cardRef = ref<HTMLElement | null>(null);
@@ -50,14 +46,22 @@ const formattedDate = computed(() => {
 onMounted(() => {
   if (cardRef.value) {
     gsap.from(cardRef.value, {
-      scale: 0.8, opacity: 0, duration: 0.8, ease: 'back.out(1.5)', delay: 0.1
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.8,
+      ease: 'back.out(1.5)',
+      delay: 0.1,
     });
   }
 
   // Faz o troféu dar um pulinho se houver recorde
   if (iconRef.value && props.bestDay) {
     gsap.from(iconRef.value, {
-      y: 10, rotation: -10, duration: 0.6, ease: 'back.out(2)', delay: 0.5
+      y: 10,
+      rotation: -10,
+      duration: 0.6,
+      ease: 'back.out(2)',
+      delay: 0.5,
     });
   }
 });
@@ -65,7 +69,6 @@ onMounted(() => {
 
 <style scoped>
 .best-day-container {
-  background: white;
   border-radius: 16px;
   /* Sombra amarela/dourada para dar clima de prêmio */
   box-shadow: 0 4px 15px rgba(242, 192, 55, 0.15);

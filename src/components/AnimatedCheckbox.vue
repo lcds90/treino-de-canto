@@ -227,11 +227,10 @@ watch(() => props.modelValue, (newValue) => {
 
 .checkbox-label {
   font-size: 1rem;
-  color: #333;
 }
 
 .checklist-item {
-  transition: background-color 0.3s ease;
+  transition: filter 0.3s ease;
   border: 1px solid transparent;
 
   /* ADICIONE ESTA LINHA: Garante que os fogos não sejam cortados pelas bordas do q-item */

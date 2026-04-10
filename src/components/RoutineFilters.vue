@@ -37,7 +37,7 @@
       </div>
     </q-card-section>
 
-    <div ref="advancedFiltersRef" class="advanced-filters-wrapper bg-grey-1">
+    <div ref="advancedFiltersRef" class="advanced-filters-wrapper">
       <q-separator />
       <q-card-section class="row q-col-gutter-md q-pt-md">
 
@@ -185,7 +185,6 @@ const toggleFilters = () => {
   position: sticky;
   top: 16px; /* Distância do topo da tela ao rolar */
   z-index: 100; /* Garante que fique por cima dos cards */
-  background-color: white; /* Impede que os cards fiquem transparentes por trás */
 }
 
 .advanced-filters-wrapper {

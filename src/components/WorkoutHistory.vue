@@ -1,6 +1,5 @@
 <template>
   <q-card class="shadow-4 workout-table-card q-mx-xl">
-
     <q-card-section class="bg-primary text-white row items-center q-pb-sm">
       <q-icon name="history" size="sm" class="q-mr-sm" />
       <div class="text-h6 text-weight-bold">Histórico de Treinos</div>
@@ -17,14 +16,13 @@
       class="workout-table"
       @row-click="onRowClick"
     >
-
       <template v-slot:body-cell-date="props">
         <q-td :props="props">
-          <div class="row items-center text-weight-medium text-grey-9">
+          <div class="row items-center text-weight-medium">
             <q-icon name="calendar_today" size="xs" color="grey-6" class="q-mr-xs" />
             {{ formatDate(props.row.date) }}
           </div>
-          <div class="text-caption text-grey-5">
+          <div class="text-caption">
             {{ formatTime(props.row.date) }}
           </div>
         </q-td>
@@ -41,7 +39,7 @@
               {{ props.row.metrics.partial }} ⚠️
               <q-tooltip>Parciais</q-tooltip>
             </q-badge>
-            <span class="text-grey-6 text-caption">de {{ props.row.metrics.total }}</span>
+            <span class="text-caption">de {{ props.row.metrics.total }}</span>
           </div>
         </q-td>
       </template>
@@ -58,7 +56,10 @@
                 class="q-mt-xs"
               />
             </div>
-            <div class="col-auto q-ml-sm text-caption text-weight-bold" :class="`text-${getPerformanceColor(props.row.metrics)}`">
+            <div
+              class="col-auto q-ml-sm text-caption text-weight-bold"
+              :class="`text-${getPerformanceColor(props.row.metrics)}`"
+            >
               {{ Math.round(getPerformanceRatio(props.row.metrics) * 100) }}%
             </div>
           </div>
@@ -79,19 +80,11 @@
             <q-tooltip>Excluir treino do histórico</q-tooltip>
           </q-btn>
 
-          <q-btn
-            flat
-            round
-            color="primary"
-            icon="chevron_right"
-            size="sm"
-            class="action-btn"
-          >
+          <q-btn flat round color="primary" icon="chevron_right" size="sm" class="action-btn">
             <q-tooltip>Ver detalhes do treino</q-tooltip>
           </q-btn>
         </q-td>
       </template>
-
     </q-table>
   </q-card>
 </template>
@@ -108,10 +101,17 @@ const $q = useQuasar();
 const workoutStore = useWorkoutStore();
 
 const columns: any[] = [
-  { name: 'date', required: true, label: 'Data e Hora', align: 'left', field: 'date', sortable: true },
+  {
+    name: 'date',
+    required: true,
+    label: 'Data e Hora',
+    align: 'left',
+    field: 'date',
+    sortable: true,
+  },
   { name: 'metrics', label: 'Exercícios', align: 'left', field: 'metrics' },
   { name: 'performance', label: 'Performance', align: 'left', field: 'metrics' },
-  { name: 'actions', label: '', align: 'right' }
+  { name: 'actions', label: '', align: 'right' },
 ];
 
 const sortedSessions = computed(() => {
@@ -133,7 +133,7 @@ const confirmDelete = (session: any) => {
     message: `Tem certeza que deseja apagar o registro do treino de <strong>${formatDate(session.date)}</strong>? <br>Essa ação não pode ser desfeita.`,
     html: true,
     cancel: true,
-    persistent: true
+    persistent: true,
   }).onOk(() => {
     if (session.id) {
       workoutStore.removeSessionAction(session.id);
@@ -143,7 +143,7 @@ const confirmDelete = (session: any) => {
 
 const getPerformanceRatio = (metrics: WorkoutMetrics) => {
   if (metrics.total === 0) return 0;
-  const score = metrics.completed + (metrics.partial * 0.5);
+  const score = metrics.completed + metrics.partial * 0.5;
   return score / metrics.total;
 };
 
@@ -156,7 +156,11 @@ const getPerformanceColor = (metrics: WorkoutMetrics) => {
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(date);
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  }).format(date);
 };
 
 const formatTime = (dateString: string) => {
@@ -177,7 +181,7 @@ const formatTime = (dateString: string) => {
 }
 
 .workout-table :deep(tbody tr:hover) {
-  background-color: #f4f6f8;
+  filter: brightness(0.98);
 }
 
 /* Evita que o hover do botão pareça estranho em cima da linha clicável */

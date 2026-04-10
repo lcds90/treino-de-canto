@@ -18,13 +18,26 @@
             :rules="[(val) => !!val || 'O título é obrigatório']"
           />
 
-
           <div class="row q-col-gutter-sm">
             <div class="col-10">
-              <q-input v-model="formData.title" label="Título da Aula/Treino *" outlined dense color="primary" :rules="[val => !!val || 'Obrigatorio']" />
+              <q-input
+                v-model="formData.title"
+                label="Título da Aula/Treino *"
+                outlined
+                dense
+                color="primary"
+                :rules="[(val) => !!val || 'Obrigatorio']"
+              />
             </div>
             <div class="col-2">
-              <q-input v-model.number="formData.order" type="number" label="Ordem" outlined dense color="primary" />
+              <q-input
+                v-model.number="formData.order"
+                type="number"
+                label="Ordem"
+                outlined
+                dense
+                color="primary"
+              />
             </div>
           </div>
 
@@ -60,7 +73,7 @@
           />
 
           <div class="column q-gutter-y-sm q-mt-sm">
-            <div class="text-subtitle2 text-grey-8 row items-center">
+            <div class="text-subtitle2 row items-center">
               <q-icon name="checklist" class="q-mr-xs" />
               Itens da Checklist
             </div>
@@ -107,7 +120,7 @@
                 </q-item-section>
               </q-item>
 
-              <q-item v-if="formData.checklist.length === 0" class="text-grey-5 text-italic">
+              <q-item v-if="formData.checklist.length === 0" class="text-italic">
                 Nenhum item adicionado...
               </q-item>
             </q-list>
@@ -219,7 +232,7 @@ const handleSave = async (preventClose?: boolean) => {
     if (preventClose) {
       resetForm();
       return;
-    };
+    }
 
     // Animação de sucesso (mesma de antes)
     gsap.to(dialogCardRef.value.$el, {

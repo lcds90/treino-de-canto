@@ -1,8 +1,6 @@
 <template>
-  <div class="chart-card bg-white q-pa-md shadow-2">
-    <div class="text-subtitle1 text-weight-bold text-grey-8 q-mb-sm">
-      Desempenho Semanal (Exercícios)
-    </div>
+  <div class="chart-card q-pa-md shadow-2">
+    <div class="text-subtitle1 text-weight-bold q-mb-sm">Desempenho Semanal (Exercícios)</div>
 
     <VueApexCharts
       v-if="hasValidData"
@@ -12,7 +10,7 @@
       :series="series"
     />
 
-    <div v-else class="row flex-center" style="height: 250px;">
+    <div v-else class="row flex-center" style="height: 250px">
       <q-spinner-dots color="primary" size="2em" />
     </div>
   </div>
@@ -21,8 +19,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import VueApexCharts from 'vue3-apexcharts';
+import { useQuasar } from 'quasar'; // <-- Importe o Quasar aqui
 
-// Tipagem das props que vêm da sua MetricsStore
+const $q = useQuasar(); // <-- Inicialize
+
 const props = defineProps<{
   chartData: {
     labels: string[],
@@ -32,7 +32,6 @@ const props = defineProps<{
   }
 }>();
 
-// --- 1. SÉRIES DE DADOS ---
 const hasValidData = computed(() => {
   return props.chartData &&
          props.chartData.completed &&
@@ -40,39 +39,36 @@ const hasValidData = computed(() => {
 });
 
 const series = computed(() => [
-  {
-    name: 'Completos',
-    data: props.chartData?.completed || [] // Opcional chaining (?) garante que não vai quebrar
-  },
-  {
-    name: 'Parciais',
-    data: props.chartData?.partial || []
-  },
-  {
-    name: 'Não Feitos',
-    data: props.chartData?.uncompleted || []
-  }
+  { name: 'Completos', data: props.chartData?.completed || [] },
+  { name: 'Parciais', data: props.chartData?.partial || [] },
+  { name: 'Não Feitos', data: props.chartData?.uncompleted || [] }
 ]);
 
-// --- 2. CONFIGURAÇÕES DO GRÁFICO ---
 const chartOptions = computed(() => ({
+  // 🔴 1. AVISA O APEXCHARTS SOBRE O MODO ESCURO
+  theme: {
+    mode: $q.dark.isActive ? 'dark' : 'light'
+  },
   chart: {
     type: 'bar',
     stacked: true,
     toolbar: { show: false },
+    // 🔴 2. Define a cor global das letras do gráfico (Legenda e Eixos)
+    foreColor: $q.dark.isActive ? '#bdbdbd' : '#333333',
     animations: {
       enabled: true,
       easing: 'easeinout',
       speed: 800,
       dynamicAnimation: { enabled: true, speed: 350 }
-    }
+    },
+    // Fundo transparente para herdar o background do Card
+    background: 'transparent'
   },
-  // 🔴 AQUI ESTÁ A CORREÇÃO!
-  // A ordem das cores segue EXATAMENTE a ordem do array "series" (Completos, Parciais, Não Feitos)
   colors: [
-    '#21BA45', // 1. Verde (positive do Quasar) para Completos
-    '#F2C037', // 2. Amarelo (warning do Quasar) para Parciais
-    '#E0E0E0'  // 3. Cinza (grey-4 do Quasar) para Não Feitos
+    '#21BA45', // Completos
+    '#F2C037', // Parciais
+    // 🔴 3. Deixa a barra "Não Feito" com um cinza mais escuro no Dark Mode para não ofuscar
+    $q.dark.isActive ? '#424242' : '#E0E0E0'
   ],
   plotOptions: {
     bar: {
@@ -87,12 +83,6 @@ const chartOptions = computed(() => ({
     categories: props.chartData?.labels || [],
     axisBorder: { show: false },
     axisTicks: { show: false },
-    labels: {
-      style: {
-        colors: '#9e9e9e',
-        fontWeight: 500,
-      }
-    }
   },
   yaxis: { show: false },
   grid: {
@@ -107,7 +97,8 @@ const chartOptions = computed(() => ({
   tooltip: {
     shared: true,
     intersect: false,
-    theme: 'light',
+    // 🔴 4. Tooltip reativo!
+    theme: $q.dark.isActive ? 'dark' : 'light',
     y: {
       formatter: function (val: number) {
         return val + " exercícios";
@@ -125,7 +116,7 @@ const chartOptions = computed(() => ({
 /* Garante que o ApexCharts respeite o arredondamento do card pai */
 :deep(.apexcharts-tooltip) {
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border: none;
 }
 </style>

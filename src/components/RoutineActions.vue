@@ -1,7 +1,6 @@
 <template>
-  <q-page-sticky position="bottom-right" :offset="[18, 18]" style="z-index: 100;">
+  <q-page-sticky position="bottom-right" :offset="[18, 18]" style="z-index: 100">
     <div class="row items-center q-gutter-md">
-
       <q-btn
         ref="backBtnRef"
         rounded
@@ -34,7 +33,6 @@
         class="shadow-5"
         @click="handleFinishClick"
       />
-
     </div>
   </q-page-sticky>
 </template>
@@ -74,7 +72,7 @@ onMounted(() => {
     duration: 0.6,
     stagger: 0.15,
     ease: 'elastic.out(1, 0.7)',
-    delay: 0.8
+    delay: 0.8,
   });
 });
 
@@ -84,14 +82,14 @@ const calculateMetrics = () => {
   let partial = 0;
   let uncompleted = 0;
 
-  tasks.value.forEach(task => {
+  tasks.value.forEach((task) => {
     const totalItems = task.checklist.length;
     if (totalItems === 0) {
       uncompleted++;
       return;
     }
 
-    const doneItems = task.checklist.filter(item => item.done).length;
+    const doneItems = task.checklist.filter((item) => item.done).length;
 
     if (doneItems === totalItems) {
       completed++;
@@ -113,7 +111,8 @@ const handleBackClick = () => {
   if (hasProgress) {
     $q.dialog({
       title: 'Treino em Andamento 🏃‍♂️',
-      message: 'Você tem exercícios marcados! Se voltar agora, seu treino não será salvo no histórico. Deseja sair mesmo assim?',
+      message:
+        'Você tem exercícios marcados! Se voltar agora, seu treino não será salvo no histórico. Deseja sair mesmo assim?',
       cancel: { label: 'Continuar Treinando', color: 'primary', flat: true },
       ok: { label: 'Sair sem salvar', color: 'negative', unelevated: true },
       persistent: true,
@@ -135,7 +134,7 @@ const handleFinishClick = () => {
     duration: 0.1,
     yoyo: true,
     repeat: 1,
-    onComplete: () => openFinishDialog(btnEl)
+    onComplete: () => openFinishDialog(btnEl),
   });
 };
 
@@ -145,12 +144,12 @@ const openFinishDialog = (btnEl: HTMLElement) => {
   // Cria um HTML bonitinho para o Quasar Dialog
   const messageHtml = `
     <div class="text-center q-mt-sm">
-      <div class="text-body1 q-mb-md text-grey-8">Aqui está o resumo do seu desempenho de hoje:</div>
+      <div class="text-body1 q-mb-md ">Aqui está o resumo do seu desempenho de hoje:</div>
       <div class="row justify-center q-gutter-sm">
         <div class="col-12"><q-chip color="positive" text-color="white" icon="star" class="text-weight-bold"> ${metrics.completed} Exercícios Completos</q-chip></div>
         ${metrics.partial > 0 ? `<div class="col-12"><q-chip color="warning" text-color="white" icon="star_half" class="text-weight-bold"> ${metrics.partial} Exercícios Parciais</q-chip></div>` : ''}
       </div>
-      <div class="text-caption q-mt-md text-grey-6">Deseja finalizar e gravar este treino no seu histórico?</div>
+      <div class="text-caption q-mt-md ">Deseja finalizar e gravar este treino no seu histórico?</div>
     </div>
   `;
 
@@ -161,18 +160,26 @@ const openFinishDialog = (btnEl: HTMLElement) => {
     cancel: { label: 'Revisar', color: 'grey-7', flat: true },
     ok: { label: 'Salvar no Histórico', color: 'positive', unelevated: true },
     persistent: true,
-  }).onOk(() => {
-    gsap.to(btnEl, {
-      rotate: 360, duration: 0.5, ease: 'back.in(1.5)',
-      onComplete: () => {
-        emit('finish', {
-          metrics,
-          tasksSnapshot: JSON.parse(JSON.stringify(tasks.value))
-        });
-      }
+  })
+    .onOk(() => {
+      gsap.to(btnEl, {
+        rotate: 360,
+        duration: 0.5,
+        ease: 'back.in(1.5)',
+        onComplete: () => {
+          emit('finish', {
+            metrics,
+            tasksSnapshot: JSON.parse(JSON.stringify(tasks.value)),
+          });
+        },
+      });
+    })
+    .onCancel(() => {
+      gsap.fromTo(
+        btnEl,
+        { x: -5 },
+        { x: 5, duration: 0.1, yoyo: true, repeat: 3, ease: 'sine.inOut', clearProps: 'x' },
+      );
     });
-  }).onCancel(() => {
-    gsap.fromTo(btnEl, { x: -5 }, { x: 5, duration: 0.1, yoyo: true, repeat: 3, ease: 'sine.inOut', clearProps: "x" });
-  });
 };
 </script>
