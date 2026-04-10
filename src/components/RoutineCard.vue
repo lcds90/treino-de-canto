@@ -1,11 +1,10 @@
 <template>
   <q-card class="routine-card shadow-4 text-left" bordered>
-
     <q-card-section class="bg-secondary text-white row items-center justify-between">
-
       <div class="row items-center">
-                <q-btn
-          ref="copyBtnRef"
+        <q-btn
+          v-if="!readOnly"
+          ref="orderBtnRef"
           flat
           round
           dense
@@ -19,7 +18,12 @@
 
         <div class="text-h6 text-weight-bold">
           {{ task.title }}
-          <q-badge color="white" text-color="secondary" class="q-ml-sm text-weight-bold" align="middle">
+          <q-badge
+            color="white"
+            text-color="secondary"
+            class="q-ml-sm text-weight-bold"
+            align="middle"
+          >
             {{ task.order || 1 }} / {{ totalTasks }}
           </q-badge>
         </div>
@@ -31,15 +35,18 @@
           flat
           round
           dense
-          icon="content_copy"
+          :icon="readOnly ? 'add' : 'content_copy'"
           color="white"
           class="action-btn"
           @click="handleDuplicate"
         >
-          <q-tooltip>Duplicar Rotina</q-tooltip>
+          <q-tooltip>
+            {{ readOnly ? 'Adicionar esta rotina à meu treino atual' : 'Duplicar rotina' }}
+          </q-tooltip>
         </q-btn>
 
         <q-btn
+          v-if="!readOnly"
           ref="editBtnRef"
           flat
           round
@@ -53,6 +60,7 @@
         </q-btn>
 
         <q-btn
+          v-if="!readOnly"
           ref="deleteBtnRef"
           flat
           round
@@ -112,9 +120,9 @@
           v-for="item in task.checklist"
           :key="item.id"
           tag="label"
-          v-ripple
+          v-ripple="!readOnly"
           class="checklist-item q-mb-sm rounded-borders"
-          :class="{ 'bg-green-1': item.done }"
+          :class="{ 'bg-green-1': item.done, 'pointer-events-none': readOnly }"
         >
           <q-item-section class="row items-start">
             <AnimatedCheckbox
@@ -154,6 +162,7 @@ import { useRoutineStore } from 'src/stores/routine-store';
 const props = defineProps<{
   task: RoutineTask;
   totalTasks: number;
+  readOnly: boolean;
 }>();
 
 const emit = defineEmits(['edit', 'delete', 'duplicate']);
@@ -175,9 +184,10 @@ const animateAction = (btnRef: any, glitterColor: string, onCompleteCallback: ()
   const tl = gsap.timeline({ onComplete: onCompleteCallback });
 
   // 1. Chacoalho (Shake) rápido do botão
-  tl.fromTo(btnElement,
+  tl.fromTo(
+    btnElement,
     { rotation: -15 },
-    { rotation: 15, duration: 0.05, yoyo: true, repeat: 3, ease: 'power1.inOut' }
+    { rotation: 15, duration: 0.05, yoyo: true, repeat: 3, ease: 'power1.inOut' },
   ).to(btnElement, { rotation: 0, duration: 0.05 });
 
   // 2. Geração dos Glitters
@@ -194,7 +204,7 @@ const animateAction = (btnRef: any, glitterColor: string, onCompleteCallback: ()
     glitter.style.top = `${centerY}px`;
     document.body.appendChild(glitter);
 
-    const angle = (Math.random() * Math.PI * 2);
+    const angle = Math.random() * Math.PI * 2;
     const distance = 30 + Math.random() * 40;
     const destX = Math.cos(angle) * distance;
     const destY = Math.sin(angle) * distance;
@@ -209,7 +219,7 @@ const animateAction = (btnRef: any, glitterColor: string, onCompleteCallback: ()
       ease: 'power2.out',
       onComplete: () => {
         glitter.remove();
-      }
+      },
     });
   }
 };
@@ -274,7 +284,7 @@ const formatDate = (dateString?: string) => {
     month: 'short',
     year: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   }).format(date);
 };
 </script>
@@ -283,7 +293,9 @@ const formatDate = (dateString?: string) => {
 .routine-card {
   border-radius: 16px;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .routine-card:hover {
@@ -323,6 +335,11 @@ const formatDate = (dateString?: string) => {
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
-  box-shadow: 0 0 4px rgba(255,255,255,0.8);
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+.pointer-events-none {
+  pointer-events: none;
+  opacity: 0.8;
 }
 </style>

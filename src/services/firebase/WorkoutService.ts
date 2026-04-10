@@ -1,4 +1,4 @@
-import { collection, getDocs, doc, getDoc, addDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, addDoc, deleteDoc } from 'firebase/firestore';
 import { db } from 'src/boot/firebase';
 import type { WorkoutSession } from 'src/components/models';
 import type { IWorkoutService } from '../interfaces/IWorkoutService';
@@ -39,6 +39,14 @@ export class FirebaseWorkoutService implements IWorkoutService {
 
       const docRef = await addDoc(collection(db, this.collectionName), dataToSave);
       return { ...dataToSave, id: docRef.id } as WorkoutSession;
+    });
+
+  }
+
+  async delete(id: string): Promise<void> {
+    return this.logger.track('DELETE_WORKOUT', `${this.collectionName}/${id}`, null, async () => {
+      const docRef = doc(db, this.collectionName, id);
+      await deleteDoc(docRef);
     });
   }
 }

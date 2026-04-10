@@ -7,7 +7,7 @@
       handle=".drag-handle"
       ghost-class="ghost-card"
       animation="200"
-      :disabled="isDragDisabled"
+      :disabled="isDragDisabled || readOnly"
       @end="onDragEnd"
     >
       <template #item="{ element, index }">
@@ -16,6 +16,7 @@
           :ref="(el) => setCardRef(el, index)"
         >
           <RoutineCard
+            :readOnly="readOnly"
             :task="element"
             :totalTasks="tasks.length"
             @edit="openEditModal"
@@ -27,6 +28,7 @@
 
       <template #footer>
         <div
+          v-if="!readOnly"
           class="col-12 col-md-8 col-lg-6 q-mb-lg add-card-wrapper"
           ref="addCardWrapperRef"
         >
@@ -35,7 +37,9 @@
       </template>
     </draggable>
 
-    <RoutineForm v-model="isDialogOpen" @saved="onTaskSaved" :task-to-edit="selectedTask" />
+    <RoutineForm
+    v-if="!readOnly"
+    v-model="isDialogOpen" @saved="onTaskSaved" :task-to-edit="selectedTask" />
   </div>
 </template>
 
@@ -53,6 +57,7 @@ import { useQuasar } from 'quasar';
 
 const props = defineProps<{
   tasks: RoutineTask[];
+  readOnly: boolean;
 }>();
 
 const cardsRefs = ref<HTMLElement[]>([]);
@@ -113,7 +118,7 @@ const openDeleteModal = (task: RoutineTask) => {
 
 const openDuplicateModal = (task: RoutineTask) => {
   $q.dialog({
-    title: 'Confirmar duplicação',
+    title: props.readOnly ? 'Adicionar Rotina' : 'Duplicar Rotina',
     message: `Deseja criar uma nova tarefa baseada em "${task.title}"?`,
     cancel: true,
     persistent: true

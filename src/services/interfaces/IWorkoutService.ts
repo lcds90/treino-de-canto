@@ -5,4 +5,5 @@ export interface IWorkoutService {
   getAll(): Promise<WorkoutSession[]>;
   getById(id: string): Promise<WorkoutSession | null>;
   create(session: WorkoutSession): Promise<WorkoutSession>;
+  delete(id: string): Promise<void>;
 }

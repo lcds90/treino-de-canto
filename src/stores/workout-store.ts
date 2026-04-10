@@ -55,12 +55,26 @@ export const useWorkoutStore = defineStore('workout', () => {
     }
   };
 
+  const removeSessionAction = async (id: string) => {
+    isLoading.value = true;
+    try {
+      await workoutService.delete(id);
+      // Remove da memória local
+      sessions.value = sessions.value.filter(session => session.id !== id);
+    } catch (error) {
+      console.error('Erro ao deletar o treino:', error);
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   return {
     sessions,
     isLoading,
     hasTrainedToday,
     todayWorkoutSession,
     fetchSessions,
-    saveWorkoutSessionAction
+    saveWorkoutSessionAction,
+    removeSessionAction,
   };
 });
