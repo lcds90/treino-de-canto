@@ -135,7 +135,6 @@ export default defineConfig((/* ctx */) => {
       // manualStoreHydration: true,
       // manualPostHydrationTrigger: true,
 
-      pwa: false,
       // pwaOfflineHtmlFilename: 'offline.html', // do NOT use index.html as name!
 
       // pwaExtendGenerateSWOptions (cfg) {},
@@ -145,10 +144,27 @@ export default defineConfig((/* ctx */) => {
     // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa
     pwa: {
       workboxMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
-      // swFilename: 'sw.js',
-      // manifestFilename: 'manifest.json',
+      swFilename: 'sw.js',
+      manifestFilename: 'manifest.json',
+      useCredentialsForManifestTag: false,
+      manifest: {
+        name: 'Rotina de Canto',
+        short_name: 'Treino Vocal',
+        description: 'Seu painel de evolução vocal.',
+        display: 'standalone', // Faz o app abrir em tela cheia sem barra de navegador
+        orientation: 'portrait', // Trava em pé (opcional)
+        background_color: '#ffffff', // Cor da tela de carregamento
+        theme_color: '#1976D2', // A cor principal do seu app (Primary)
+        icons: [
+          {
+            src: 'icons/icon-128x128.png',
+            sizes: '128x128',
+            type: 'image/png',
+          },
+          // ... deixa os ícones padrão por enquanto
+        ],
+      },
       // extendManifestJson (json) {},
-      // useCredentialsForManifestTag: true,
       // injectPwaMetaTags: false,
       // extendPWACustomSWConf (esbuildConf) {},
       // extendGenerateSWOptions (cfg) {},
