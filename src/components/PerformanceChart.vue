@@ -4,6 +4,7 @@
 
     <VueApexCharts
       v-if="hasValidData"
+      ref="chart"
       type="bar"
       height="250"
       :options="chartOptions"
@@ -17,12 +18,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import VueApexCharts from 'vue3-apexcharts';
 import { useQuasar } from 'quasar'; // <-- Importe o Quasar aqui
 
 const $q = useQuasar(); // <-- Inicialize
-
+const chart = ref<any>(null);
 const props = defineProps<{
   chartData: {
     labels: string[],
@@ -45,7 +46,6 @@ const series = computed(() => [
 ]);
 
 const chartOptions = computed(() => ({
-  // 🔴 1. AVISA O APEXCHARTS SOBRE O MODO ESCURO
   theme: {
     mode: $q.dark.isActive ? 'dark' : 'light'
   },
@@ -53,7 +53,6 @@ const chartOptions = computed(() => ({
     type: 'bar',
     stacked: true,
     toolbar: { show: false },
-    // 🔴 2. Define a cor global das letras do gráfico (Legenda e Eixos)
     foreColor: $q.dark.isActive ? '#bdbdbd' : '#333333',
     animations: {
       enabled: true,
@@ -106,6 +105,13 @@ const chartOptions = computed(() => ({
     }
   }
 }));
+
+watch(() => $q.dark.isActive, () => {
+  if (hasValidData.value && chart.value) {
+    console.log(chart.value)
+    chart.value.refresh()
+  }
+});
 </script>
 
 <style scoped>

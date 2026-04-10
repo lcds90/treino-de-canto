@@ -1,8 +1,9 @@
+// src/stores/settings-store.ts
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { setCssVar, Dark } from 'quasar';
+import { settingsService } from 'src/services'; // <-- Importa o serviço
 
-// Cores originais baseadas no seu print
 export const DEFAULT_COLORS: Record<string, string> = {
   primary: '#1976D2',
   secondary: '#26A69A',
@@ -26,43 +27,64 @@ export const useSettingsStore = defineStore('settings', () => {
   const bannerSubtitle = ref('Mas sinta-se livre para treinar mais! 🎶');
   const themeColors = ref<Record<string, string>>({ ...DEFAULT_COLORS });
 
-  // --- ACTIONS ---
+  const isLoading = ref(false);
 
-  // Inicializa a Store lendo do LocalStorage (Roda ao abrir o app)
-  const initSettings = () => {
-    const savedSettings = localStorage.getItem('app_settings');
-    if (savedSettings) {
-      const parsed = JSON.parse(savedSettings);
-      isDark.value = parsed.isDark ?? false;
-      appTitle.value = parsed.appTitle ?? 'Rotina de Canto 🎤';
-      appDescription.value = parsed.appDescription ?? 'Seu painel de evolução vocal.';
-      workoutTitle.value = parsed.workoutTitle ?? '🎧 Hora de Soltar a Voz! 🎶';
-      workoutSubtitle.value = parsed.workoutSubtitle ?? 'Siga as instruções de cada vídeo e marque os exercícios concluídos.';
-      bannerTitle.value = parsed.bannerTitle ?? 'Hoje um treino já foi registrado! 💪';
-      bannerSubtitle.value = parsed.bannerSubtitle ?? 'Mas sinta-se livre para treinar mais! 🎶';
-      themeColors.value = { ...DEFAULT_COLORS, ...parsed.themeColors };
-    }
+  // Variável para controlar o timer do Debounce
+  let firebaseSaveTimeout: ReturnType<typeof setTimeout>;
 
-    applySettings();
-  };
-
-  // Aplica as configurações na interface (Quasar e DOM)
+  // --- FUNÇÕES INTERNAS ---
   const applySettings = () => {
-    // Aplica Dark Mode
     Dark.set(isDark.value);
-
-    // Aplica Title da aba do navegador
     document.title = appTitle.value;
-
-    // Aplica as cores no CSS Root
     for (const [name, hex] of Object.entries(themeColors.value)) {
       setCssVar(name, hex);
     }
   };
 
-  // Salva no LocalStorage
+  const loadDataIntoState = (data: any) => {
+    isDark.value = data.isDark ?? false;
+    appTitle.value = data.appTitle ?? 'Rotina de Canto 🎤';
+    appDescription.value = data.appDescription ?? 'Seu painel de evolução vocal.';
+    workoutTitle.value = data.workoutTitle ?? '🎧 Hora de Soltar a Voz! 🎶';
+    workoutSubtitle.value = data.workoutSubtitle ?? 'Siga as instruções de cada vídeo e marque os exercícios concluídos.';
+    bannerTitle.value = data.bannerTitle ?? 'Hoje um treino já foi registrado! 💪';
+    bannerSubtitle.value = data.bannerSubtitle ?? 'Mas sinta-se livre para treinar mais! 🎶';
+    themeColors.value = { ...DEFAULT_COLORS, ...data.themeColors };
+  };
+
+  // --- ACTIONS ---
+
+  // Inicializa buscando do Firebase primeiro
+  const initSettings = async () => {
+    isLoading.value = true;
+    try {
+      // 1. Tenta pegar do Firebase
+      const remoteSettings = await settingsService.getSettings();
+
+      if (remoteSettings) {
+        loadDataIntoState(remoteSettings);
+        // Atualiza o backup local
+        localStorage.setItem('app_settings', JSON.stringify(remoteSettings));
+      } else {
+        // 2. Se não tem no Firebase, tenta o LocalStorage
+        const localSettings = localStorage.getItem('app_settings');
+        if (localSettings) {
+          loadDataIntoState(JSON.parse(localSettings));
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao buscar configurações do Firebase. Usando backup local.', error);
+      const localSettings = localStorage.getItem('app_settings');
+      if (localSettings) loadDataIntoState(JSON.parse(localSettings));
+    } finally {
+      applySettings();
+      isLoading.value = false;
+    }
+  };
+
+  // Salva no Storage instantaneamente e faz Debounce no Firebase
   const saveToStorage = () => {
-    localStorage.setItem('app_settings', JSON.stringify({
+    const dataToSave = {
       isDark: isDark.value,
       appTitle: appTitle.value,
       appDescription: appDescription.value,
@@ -71,8 +93,23 @@ export const useSettingsStore = defineStore('settings', () => {
       bannerTitle: bannerTitle.value,
       bannerSubtitle: bannerSubtitle.value,
       themeColors: themeColors.value
-    }));
+    };
+
+    // 1. App fica rápido: Salva local e aplica CSS na hora
+    localStorage.setItem('app_settings', JSON.stringify(dataToSave));
     applySettings();
+
+    // 2. Firebase fica seguro: Cancela o timer anterior se existir e cria um novo
+    clearTimeout(firebaseSaveTimeout);
+
+    firebaseSaveTimeout = setTimeout(async () => {
+      try {
+        await settingsService.saveSettings(dataToSave);
+        console.log('⚙️ Configurações sincronizadas com a nuvem!');
+      } catch (error) {
+        console.error('Erro ao salvar configurações na nuvem:', error);
+      }
+    }, 1000); // Aguarda 1 segundo de "silêncio" antes de enviar para o banco
   };
 
   const toggleDarkMode = (val: boolean) => {
@@ -113,11 +150,12 @@ export const useSettingsStore = defineStore('settings', () => {
     isDark,
     appTitle,
     appDescription,
-    workoutTitle,       
+    workoutTitle,
     workoutSubtitle,
     bannerTitle,
     bannerSubtitle,
     themeColors,
+    isLoading,
     initSettings,
     toggleDarkMode,
     updateAppMeta,
