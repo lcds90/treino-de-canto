@@ -119,7 +119,7 @@ const startStudy = () => {
     repeat: 1,
     onComplete: () => {
       void router.push('/treino');
-      $q.notify({ type: 'positive', message: '🎧 Preparando as cordas vocais...' });
+      $q.notify({ type: 'positive', message: '🚀 Treino iniciado!' });
     },
   });
 };

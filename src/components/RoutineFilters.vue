@@ -11,7 +11,7 @@
             v-model="filters.search"
             outlined
             dense
-            placeholder="Pesquisar em tudo (título, link, checklist...)"
+            placeholder="Pesquisar por termo"
             clearable
             class="search-input"
           >

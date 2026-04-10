@@ -13,12 +13,18 @@
 
     <div class="text-center q-mb-xl q-mt-sm">
       <h1 class="text-h4 text-weight-bold text-primary q-mb-sm">
-        {{ isReadOnly ? '📋 Resumo do Treino' : '🎧 Hora de Soltar a Voz! 🎶' }}
+        {{ isReadOnly ? '📋 Resumo do Treino' : workoutTitle }}
       </h1>
-      <p class="text-subtitle1" v-if="!isReadOnly">
-        Siga as instruções de cada vídeo e marque os exercícios concluídos.
+      <p
+        :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-7'"
+        class="text-subtitle1"
+        v-if="!isReadOnly"
+      >
+        {{ workoutSubtitle }}
       </p>
-      <p class="text-subtitle1" v-else>Visualizando o registro de um treino finalizado.</p>
+      <p :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-7'" class="text-subtitle1" v-else>
+        Visualizando o registro de um treino finalizado.
+      </p>
     </div>
 
     <q-banner
@@ -27,8 +33,8 @@
       class="banner-width"
       v-if="!isReadOnly && workoutStore.hasTrainedToday"
     >
-      <p class="text-body2 q-mb-none">Hoje um treino já foi registrado! 💪</p>
-      <p class="text-caption q-mb-none">Mas sinta-se livre para treinar mais! 🎶</p>
+      <p class="text-body2 q-mb-none">{{ bannerTitle }}</p>
+      <p class="text-caption q-mb-none">{{ bannerSubtitle }}</p>
       <template v-slot:action>
         <q-btn flat label="Ver treinos" @click="isOpen = true" />
       </template>
@@ -66,14 +72,17 @@ import RoutineList from 'src/components/RoutineList.vue';
 import RoutineActions from 'src/components/RoutineActions.vue';
 import RoutineFilters from 'src/components/RoutineFilters.vue';
 import WorkoutHistory from 'src/components/WorkoutHistory.vue';
+import { useSettingsStore } from 'src/stores/settings-store';
 
 const route = useRoute();
 const router = useRouter();
 const routineStore = useRoutineStore();
 const workoutStore = useWorkoutStore();
+const settingsStore = useSettingsStore();
 const $q = useQuasar();
 
 const { activeFilters, filteredTasks, isLoading } = storeToRefs(routineStore);
+const { workoutTitle, workoutSubtitle, bannerTitle, bannerSubtitle } = storeToRefs(settingsStore);
 const { fetchTasks } = routineStore;
 const { saveWorkoutSessionAction } = workoutStore;
 
