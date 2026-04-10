@@ -1,11 +1,13 @@
+// src/services/index.ts
 import type { IRoutineService } from './interfaces/IRoutineService';
+import type { IWorkoutService } from './interfaces/IWorkoutService';
 import type { ILogger } from './interfaces/ILogger';
 
 import { ConsoleLogger } from './observability/Logger';
-import { FirebaseRoutineService } from './firebase/FirebaseRoutine';
+import { FirebaseRoutineService } from './firebase/RoutineService';
+import { FirebaseWorkoutService } from './firebase/WorkoutService';
 
-// 1. Criamos a ferramenta de Logger
 export const appLogger: ILogger = new ConsoleLogger();
 
-// 2. Injetamos o Logger no serviço do banco de dados
 export const routineService: IRoutineService = new FirebaseRoutineService(appLogger);
+export const workoutService: IWorkoutService = new FirebaseWorkoutService(appLogger);

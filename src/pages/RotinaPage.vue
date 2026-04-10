@@ -1,6 +1,5 @@
 <template>
   <q-page class="bg-grey-1 q-pa-md">
-
     <RoutineHeader />
     <div class="row justify-center sticky-wrapper q-mb-md">
       <div class="col-12 col-md-8 col-lg-6">
@@ -11,7 +10,7 @@
 
     <div style="height: 100px; width: 100%"></div>
 
-    <RoutineActions @finish="onRoutineCompleted" />
+    <RoutineActions @finish="saveWorkoutSessionAction" />
   </q-page>
 </template>
 
@@ -19,26 +18,34 @@
 import { onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRoutineStore } from 'src/stores/routine-store';
-
+import { useQuasar } from 'quasar';
 import RoutineHeader from 'src/components/RoutineHeader.vue';
 import RoutineList from 'src/components/RoutineList.vue';
 import RoutineActions from 'src/components/RoutineActions.vue';
 import RoutineFilters from 'src/components/RoutineFilters.vue';
+import { useWorkoutStore } from 'src/stores/workout-store';
 
 const routineStore = useRoutineStore();
+const workoutStore = useWorkoutStore();
+const $q = useQuasar();
 const { activeFilters, filteredTasks: tasks, isLoading } = storeToRefs(routineStore);
-const { fetchTasks, finishRoutineAction } = routineStore;
+const { fetchTasks } = routineStore;
+const { saveWorkoutSessionAction } = workoutStore;
 
 onMounted(async () => {
-  // Dispara a busca inicial do Firebase (ou mock) ao carregar a tela
   await fetchTasks();
+  if (workoutStore.hasTrainedToday) {
+    $q.notify({
+      message: 'Hoje um treino já foi registrado! 💪',
+      color: 'info',
+      icon: 'info',
+      position: 'top',
+      timeout: 0,
+      closeBtn: 'Fechar',
+      caption: 'Mas sinta-se livre para treinar mais! 🎶',
+    });
+  }
 });
-
-const onRoutineCompleted = async () => {
-  // Ação disparada APÓS a animação de sucesso do botão terminar
-  await finishRoutineAction();
-  // Aqui você pode colocar um router.push('/') se desejar
-};
 </script>
 
 <style scoped>

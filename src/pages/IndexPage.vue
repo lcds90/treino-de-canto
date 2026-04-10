@@ -1,7 +1,6 @@
 <template>
   <q-page class="flex flex-center column bg-grey-1 text-center q-pa-md">
     <div class="hero-container">
-
       <h1 ref="titleRef" class="animated-title text-h3 text-weight-bolder q-mb-md">
         Rotina de canto 🎤
       </h1>
@@ -23,56 +22,64 @@
       >
         <span class="text-weight-bold text-h6">Estudar</span>
       </q-btn>
-
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import gsap from 'gsap'
-import { useQuasar } from 'quasar'
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import gsap from 'gsap';
+import { useQuasar } from 'quasar';
+import { useWorkoutStore } from 'src/stores/workout-store';
 
-const $q = useQuasar()
-const router = useRouter()
-
+const $q = useQuasar();
+const router = useRouter();
+const workoutStore = useWorkoutStore();
 // Tipando as referências. Elementos HTML nativos usam HTMLElement.
-const titleRef = ref<HTMLElement | null>(null)
-const subtitleRef = ref<HTMLElement | null>(null)
+const titleRef = ref<HTMLElement | null>(null);
+const subtitleRef = ref<HTMLElement | null>(null);
 
 // Como q-btn é um componente do Quasar, usamos 'any' ou tipamos a instância para acessar o $el sem erros.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-redundant-type-constituents
-const btnRef = ref<any | null>(null)
+const btnRef = ref<any | null>(null);
 
-onMounted(() => {
+onMounted(async () => {
   // Guard Clause: Garante para o TypeScript que nada aqui é 'null' a partir desta linha
-  if (!titleRef.value || !subtitleRef.value || !btnRef.value) return
+  if (!titleRef.value || !subtitleRef.value || !btnRef.value) return;
 
   // Armazenamos o elemento HTML do botão em uma constante para o GSAP
-  const btnElement = btnRef.value.$el
+  const btnElement = btnRef.value.$el;
 
   // 1. Timeline de entrada
-  const tl = gsap.timeline()
+  const tl = gsap.timeline();
 
   tl.from(titleRef.value, {
     y: -30,
     opacity: 0,
     duration: 0.8,
-    ease: 'back.out(1.7)'
+    ease: 'back.out(1.7)',
   })
-  .from(subtitleRef.value, {
-    y: 20,
-    opacity: 0,
-    duration: 0.6,
-    ease: 'power2.out'
-  }, '-=0.4')
-  .from(btnElement, {
-    scale: 0,
-    opacity: 0,
-    duration: 0.8,
-    ease: 'elastic.out(1, 0.5)'
-  }, '-=0.2')
+    .from(
+      subtitleRef.value,
+      {
+        y: 20,
+        opacity: 0,
+        duration: 0.6,
+        ease: 'power2.out',
+      },
+      '-=0.4',
+    )
+    .from(
+      btnElement,
+      {
+        scale: 0,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'elastic.out(1, 0.5)',
+      },
+      '-=0.2',
+    );
 
   // 2. Animação contínua (flutuação encantadora) no botão
   gsap.to(btnElement, {
@@ -81,15 +88,15 @@ onMounted(() => {
     repeat: -1,
     yoyo: true,
     ease: 'sine.inOut',
-    delay: 1.5
-  })
-})
+    delay: 1.5,
+  });
+});
 
 const startStudy = () => {
   // Nova verificação de nullidade para o evento de clique
-  if (!btnRef.value) return
+  if (!btnRef.value) return;
 
-  const btnElement = btnRef.value.$el
+  const btnElement = btnRef.value.$el;
 
   // Animação de "click" pressionado antes de navegar
   gsap.to(btnElement, {
@@ -99,14 +106,15 @@ const startStudy = () => {
     repeat: 1,
     onComplete: () => {
       // Redireciona para a rota onde os vídeos do YouTube estarão
-      void router.push('/rotina')
+      void router.push('/treino');
+
       $q.notify({
         type: 'positive',
-        message: '🎧 Prepare as cordas vocais...',
-      })
-    }
-  })
-}
+        message: '🎧 Preparando as cordas vocais...',
+      });
+    },
+  });
+};
 </script>
 
 <style scoped>
@@ -121,9 +129,18 @@ const startStudy = () => {
 
 /* Animação para o título */
 @keyframes pulsate {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.05); opacity: 0.9; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .animated-title {
@@ -132,9 +149,15 @@ const startStudy = () => {
 
 /* Animação para o subtítulo */
 @keyframes glowGradient {
-  0% { color: #555; }
-  50% { color: #f57c00; }
-  100% { color: #555; }
+  0% {
+    color: #555;
+  }
+  50% {
+    color: #f57c00;
+  }
+  100% {
+    color: #555;
+  }
 }
 
 .animated-subtitle {
@@ -159,7 +182,9 @@ const startStudy = () => {
   right: 15px;
   top: 50%;
   transform: translateY(-50%) scale(0);
-  transition: transform 0.3s ease, right 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    right 0.3s ease;
   opacity: 0;
 }
 

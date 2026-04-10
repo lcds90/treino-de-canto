@@ -23,3 +23,17 @@ export interface ChecklistItem {
   label: string
   done: boolean
 }
+
+export interface WorkoutMetrics {
+  total: number;
+  completed: number;
+  partial: number;
+  uncompleted: number;
+}
+
+export interface WorkoutSession {
+  id?: string;
+  date: string; // Data ISO de quando o treino foi finalizado
+  metrics: WorkoutMetrics;
+  tasksSnapshot: RoutineTask[]; // A "foto" dos cards no momento da finalização
+}
