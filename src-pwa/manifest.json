@@ -5,6 +5,7 @@
   "description": "Aplicação para eu criar uma rotina de canto com meus estudos próprios",
   "display": "standalone",
   "background_color": "#ffffff",
+  "start_url": "/",
   "theme_color": "#027be3",
   "icons": [
     {
