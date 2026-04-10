@@ -1,19 +1,16 @@
 <template>
   <q-page class="bg-grey-1 q-pa-md">
-
     <RoutineHeader />
-<div class="row justify-center">
+    <div class="row justify-center sticky-wrapper q-mb-md">
       <div class="col-12 col-md-8 col-lg-6">
-        <routine-filters
-         v-model="activeFilters" />
+        <RoutineFilters v-model="activeFilters" />
       </div>
     </div>
     <RoutineList v-if="!isLoading" :tasks="tasks" />
 
-    <div style="height: 100px; width: 100%;"></div>
+    <div style="height: 100px; width: 100%"></div>
 
     <RoutineActions @finish="onRoutineCompleted" />
-
   </q-page>
 </template>
 
@@ -42,3 +39,12 @@ const onRoutineCompleted = async () => {
   // Aqui você pode colocar um router.push('/') se desejar
 };
 </script>
+
+<style scoped>
+/* A regra de ouro do Sticky */
+.sticky-wrapper {
+  position: sticky;
+  top: 16px; /* A distância do topo da tela */
+  z-index: 100; /* Garante que os cards passem por baixo dele e não por cima */
+}
+</style>
