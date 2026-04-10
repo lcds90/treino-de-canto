@@ -3,21 +3,19 @@ import { collection, getDocs, doc, setDoc, deleteDoc, getDoc, addDoc } from 'fir
 import { db } from 'src/boot/firebase';
 import type { RoutineTask } from 'src/components/models';
 import type { IRoutineService } from '../interfaces/IRoutineService';
-import type { ILogger } from '../interfaces/ILogger'; // <-- Importamos a interface do logger
+import type { ILogger } from '../interfaces/ILogger';
 
 export class FirebaseRoutineService implements IRoutineService {
   private collectionName = 'routines';
 
-  // O Construtor agora exige um Logger genérico
   constructor(private logger: ILogger) {}
 
   async getAll(): Promise<RoutineTask[]> {
-    // Envolvemos a lógica no logger
     return this.logger.track('GET_ALL_ROUTINES', this.collectionName, null, async () => {
       const querySnapshot = await getDocs(collection(db, this.collectionName));
       return querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
+        ...doc.data(), // 1º: Despeja os dados do banco primeiro
+        id: doc.id     // 2º: OBRIGA o ID real do documento a ser o vencedor
       })) as RoutineTask[];
     });
   }
@@ -27,7 +25,10 @@ export class FirebaseRoutineService implements IRoutineService {
       const docRef = doc(db, this.collectionName, id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() } as RoutineTask;
+        return {
+          ...docSnap.data(), // 1º: Despeja os dados
+          id: docSnap.id     // 2º: Garante o ID real
+        } as RoutineTask;
       }
       return null;
     });
@@ -35,10 +36,14 @@ export class FirebaseRoutineService implements IRoutineService {
 
   async create(task: Omit<RoutineTask, 'id'>): Promise<RoutineTask> {
     return this.logger.track('CREATE_ROUTINE', this.collectionName, task, async () => {
-      const docRef = await addDoc(collection(db, this.collectionName), task);
+      // BLINDAGEM: Se por acaso vier um 'id' no payload, nós o arrancamos fora aqui
+      // para garantir que ele nunca seja salvo DENTRO do documento
+      const { id, ...dataToSave } = task as any;
+
+      const docRef = await addDoc(collection(db, this.collectionName), dataToSave);
       return {
-        id: docRef.id,
-        ...task
+        ...dataToSave,
+        id: docRef.id
       } as RoutineTask;
     });
   }
@@ -46,13 +51,15 @@ export class FirebaseRoutineService implements IRoutineService {
   async update(task: RoutineTask): Promise<void> {
     return this.logger.track('UPDATE_ROUTINE', `${this.collectionName}/${task.id}`, task, async () => {
       const docRef = doc(db, this.collectionName, task.id);
+
+      // O update já estava blindado tirando o ID, o que é ótimo!
       const { id, ...dataToUpdate } = task;
+
       await setDoc(docRef, dataToUpdate, { merge: true });
     });
   }
 
   async delete(id: string): Promise<void> {
-    console.log('Deleting routine with ID:', id); // Log para verificar o ID
     return this.logger.track('DELETE_ROUTINE', `${this.collectionName}/${id}`, null, async () => {
       const docRef = doc(db, this.collectionName, id);
       await deleteDoc(docRef);
