@@ -10,25 +10,28 @@ const getLocalDateString = (isoString: string | Date) => {
 };
 
 export class MetricsService {
-
   calculateStreak(sessions: WorkoutSession[]): number {
     if (!sessions || sessions.length === 0) return 0;
 
-    const uniqueDates = [...new Set(sessions.map(s => getLocalDateString(s.date)))]
-      .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+    const uniqueDates = [...new Set(sessions.map((s) => getLocalDateString(s.date)))].sort(
+      (a, b) => new Date(b).getTime() - new Date(a).getTime(),
+    );
 
     let streak = 0;
     const todayStr = getLocalDateString(new Date());
 
-    const mostRecent = uniqueDates[0];
+    const mostRecent = uniqueDates[0] as string;
+
     const msPerDay = 1000 * 60 * 60 * 24;
-    const daysSinceLastWorkout = Math.floor((new Date(todayStr).getTime() - new Date(mostRecent).getTime()) / msPerDay);
+    const daysSinceLastWorkout = Math.floor(
+      (new Date(todayStr).getTime() - new Date(mostRecent).getTime()) / msPerDay,
+    );
 
     if (daysSinceLastWorkout > 1) return 0;
 
-    let currentDate = new Date(uniqueDates[0]);
+    const currentDate = new Date(mostRecent);
     for (let i = 0; i < uniqueDates.length; i++) {
-      const iterDate = new Date(uniqueDates[i]);
+      const iterDate = new Date(uniqueDates[i] as string);
       if (Math.abs(currentDate.getTime() - iterDate.getTime()) < msPerDay * 1.5) {
         streak++;
         currentDate.setDate(currentDate.getDate() - 1);
@@ -42,7 +45,7 @@ export class MetricsService {
   getWeeklyPerformance(sessions: WorkoutSession[]) {
     const last7Days = [];
     const completedData = [];
-    const partialData = [];    // <-- Array para parciais
+    const partialData = []; // <-- Array para parciais
     const uncompletedData = []; // <-- Array para não feitos
 
     for (let i = 6; i >= 0; i--) {
@@ -52,13 +55,13 @@ export class MetricsService {
       const dateStr = getLocalDateString(d);
       last7Days.push(new Intl.DateTimeFormat('pt-BR', { weekday: 'short' }).format(d));
 
-      const daySessions = sessions.filter(s => getLocalDateString(s.date) === dateStr);
+      const daySessions = sessions.filter((s) => getLocalDateString(s.date) === dateStr);
 
       let dayCompleted = 0;
       let dayPartial = 0;
       let dayUncompleted = 0;
 
-      daySessions.forEach(session => {
+      daySessions.forEach((session) => {
         // Agora dividimos exatamente nas 3 categorias
         dayCompleted += session.metrics.completed;
         dayPartial += session.metrics.partial;
@@ -74,7 +77,7 @@ export class MetricsService {
       labels: last7Days,
       completed: completedData,
       partial: partialData,
-      uncompleted: uncompletedData
+      uncompleted: uncompletedData,
     };
   }
 
@@ -86,7 +89,7 @@ export class MetricsService {
     // 1. Agrupamos os dados por dia (YYYY-MM-DD)
     const dailyStats: Record<string, { completed: number; partial: number }> = {};
 
-    sessions.forEach(s => {
+    sessions.forEach((s) => {
       const dateStr = getLocalDateString(s.date);
       if (!dailyStats[dateStr]) dailyStats[dateStr] = { completed: 0, partial: 0 };
 
@@ -123,7 +126,7 @@ export class MetricsService {
     return {
       date: bestDate,
       completed: maxCompleted,
-      partial: maxPartial
+      partial: maxPartial,
     };
   }
 }

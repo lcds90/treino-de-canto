@@ -168,7 +168,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch } from 'vue';
 import gsap from 'gsap';
-import { RoutineTask, ChecklistItem } from 'src/components/models';
+import type { RoutineTask, ChecklistItem } from 'src/components/models';
 import { useRoutineStore } from 'src/stores/routine-store';
 
 const props = defineProps({

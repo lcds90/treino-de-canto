@@ -72,7 +72,7 @@ const { appTitle, appDescription } = storeToRefs(settingsStore);
 
 const heroRef = ref<HTMLElement | null>(null);
 const btnRef = ref<any | null>(null);
-const historyRef = ref<HTMLElement | null>(null);
+const historyRef = ref<any | null>(null);
 
 onMounted(async () => {
   // 1. Busca os treinos com segurança
@@ -91,7 +91,7 @@ onMounted(async () => {
       tl.from(heroRef.value, { y: -30, opacity: 0, duration: 0.8, ease: 'power3.out' })
         .from(btnRef.value.$el, { duration: 0.6, ease: 'back.out(1.5)' }, '-=0.4')
         .from(
-          historyRef.value.$el || historyRef.value,
+          historyRef.value?.$el || historyRef.value,
           { y: 30, opacity: 0, duration: 0.6 },
           '-=0.2',
         );

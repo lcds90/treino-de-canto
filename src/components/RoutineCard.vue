@@ -156,7 +156,7 @@
 import { ref } from 'vue';
 import gsap from 'gsap';
 import AnimatedCheckbox from './AnimatedCheckbox.vue';
-import { RoutineTask, PlatformType } from './models';
+import type { RoutineTask, PlatformType } from './models';
 import { useRoutineStore } from 'src/stores/routine-store';
 
 const props = defineProps<{

@@ -13,7 +13,7 @@ export const DEFAULT_COLORS: Record<string, string> = {
   info: '#31CCEC',
   warning: '#F2C037',
   dark: '#1D1D1D',
-  'dark-page': '#121212'
+  'dark-page': '#121212',
 };
 
 export const useSettingsStore = defineStore('settings', () => {
@@ -22,7 +22,9 @@ export const useSettingsStore = defineStore('settings', () => {
   const appTitle = ref('Rotina de Canto 🎤');
   const appDescription = ref('Seu painel de evolução vocal.');
   const workoutTitle = ref('🎧 Hora de Soltar a Voz! 🎶');
-  const workoutSubtitle = ref('Siga as instruções de cada vídeo e marque os exercícios concluídos.');
+  const workoutSubtitle = ref(
+    'Siga as instruções de cada vídeo e marque os exercícios concluídos.',
+  );
   const bannerTitle = ref('Hoje um treino já foi registrado! 💪');
   const bannerSubtitle = ref('Mas sinta-se livre para treinar mais! 🎶');
   const themeColors = ref<Record<string, string>>({ ...DEFAULT_COLORS });
@@ -46,7 +48,8 @@ export const useSettingsStore = defineStore('settings', () => {
     appTitle.value = data.appTitle ?? 'Rotina de Canto 🎤';
     appDescription.value = data.appDescription ?? 'Seu painel de evolução vocal.';
     workoutTitle.value = data.workoutTitle ?? '🎧 Hora de Soltar a Voz! 🎶';
-    workoutSubtitle.value = data.workoutSubtitle ?? 'Siga as instruções de cada vídeo e marque os exercícios concluídos.';
+    workoutSubtitle.value =
+      data.workoutSubtitle ?? 'Siga as instruções de cada vídeo e marque os exercícios concluídos.';
     bannerTitle.value = data.bannerTitle ?? 'Hoje um treino já foi registrado! 💪';
     bannerSubtitle.value = data.bannerSubtitle ?? 'Mas sinta-se livre para treinar mais! 🎶';
     themeColors.value = { ...DEFAULT_COLORS, ...data.themeColors };
@@ -92,7 +95,7 @@ export const useSettingsStore = defineStore('settings', () => {
       workoutSubtitle: workoutSubtitle.value,
       bannerTitle: bannerTitle.value,
       bannerSubtitle: bannerSubtitle.value,
-      themeColors: themeColors.value
+      themeColors: themeColors.value,
     };
 
     // 1. App fica rápido: Salva local e aplica CSS na hora
@@ -137,8 +140,10 @@ export const useSettingsStore = defineStore('settings', () => {
   };
 
   const resetColor = (colorName: string) => {
-    themeColors.value[colorName] = DEFAULT_COLORS[colorName];
-    saveToStorage();
+    if (DEFAULT_COLORS[colorName]) {
+      themeColors.value[colorName] = DEFAULT_COLORS[colorName];
+      saveToStorage();
+    }
   };
 
   const resetAllColors = () => {
@@ -162,6 +167,6 @@ export const useSettingsStore = defineStore('settings', () => {
     updateWorkoutMeta,
     updateColor,
     resetColor,
-    resetAllColors
+    resetAllColors,
   };
 });

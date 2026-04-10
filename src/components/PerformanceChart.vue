@@ -19,35 +19,33 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import VueApexCharts from 'vue3-apexcharts';
+import VueApexCharts, { VueApexChartsComponentProps } from 'vue3-apexcharts';
 import { useQuasar } from 'quasar'; // <-- Importe o Quasar aqui
 
 const $q = useQuasar(); // <-- Inicialize
 const chart = ref<any>(null);
 const props = defineProps<{
   chartData: {
-    labels: string[],
-    completed: number[],
-    partial: number[],
-    uncompleted: number[]
-  }
+    labels: string[];
+    completed: number[];
+    partial: number[];
+    uncompleted: number[];
+  };
 }>();
 
 const hasValidData = computed(() => {
-  return props.chartData &&
-         props.chartData.completed &&
-         props.chartData.completed.length > 0;
+  return props.chartData && props.chartData.completed && props.chartData.completed.length > 0;
 });
 
 const series = computed(() => [
   { name: 'Completos', data: props.chartData?.completed || [] },
   { name: 'Parciais', data: props.chartData?.partial || [] },
-  { name: 'Não Feitos', data: props.chartData?.uncompleted || [] }
+  { name: 'Não Feitos', data: props.chartData?.uncompleted || [] },
 ]);
 
-const chartOptions = computed(() => ({
+const chartOptions = computed<ApexCharts.ApexOptions>(() => ({
   theme: {
-    mode: $q.dark.isActive ? 'dark' : 'light'
+    mode: $q.dark.isActive ? 'dark' : 'light',
   },
   chart: {
     type: 'bar',
@@ -58,16 +56,16 @@ const chartOptions = computed(() => ({
       enabled: true,
       easing: 'easeinout',
       speed: 800,
-      dynamicAnimation: { enabled: true, speed: 350 }
+      dynamicAnimation: { enabled: true, speed: 350 },
     },
     // Fundo transparente para herdar o background do Card
-    background: 'transparent'
+    background: 'transparent',
   },
   colors: [
     '#21BA45', // Completos
     '#F2C037', // Parciais
     // 🔴 3. Deixa a barra "Não Feito" com um cinza mais escuro no Dark Mode para não ofuscar
-    $q.dark.isActive ? '#424242' : '#E0E0E0'
+    $q.dark.isActive ? '#424242' : '#E0E0E0',
   ],
   plotOptions: {
     bar: {
@@ -86,12 +84,12 @@ const chartOptions = computed(() => ({
   yaxis: { show: false },
   grid: {
     show: false,
-    padding: { top: 0, bottom: 0, left: 10, right: 10 }
+    padding: { top: 0, bottom: 0, left: 10, right: 10 },
   },
   legend: {
     position: 'bottom',
-    markers: { radius: 12 },
-    itemMargin: { horizontal: 10, vertical: 10 }
+    markers: { size: 6 },
+    itemMargin: { horizontal: 10, vertical: 10 },
   },
   tooltip: {
     shared: true,
@@ -100,18 +98,21 @@ const chartOptions = computed(() => ({
     theme: $q.dark.isActive ? 'dark' : 'light',
     y: {
       formatter: function (val: number) {
-        return val + " exercícios";
-      }
-    }
-  }
+        return val + ' exercícios';
+      },
+    },
+  },
 }));
 
-watch(() => $q.dark.isActive, () => {
-  if (hasValidData.value && chart.value) {
-    console.log(chart.value)
-    chart.value.refresh()
-  }
-});
+watch(
+  () => $q.dark.isActive,
+  () => {
+    if (hasValidData.value && chart.value) {
+      console.log(chart.value);
+      chart.value.refresh();
+    }
+  },
+);
 </script>
 
 <style scoped>

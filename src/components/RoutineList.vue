@@ -50,7 +50,7 @@ import gsap from 'gsap';
 import RoutineCard from 'src/components/RoutineCard.vue';
 import RoutineAdd from 'src/components/RoutineAdd.vue';
 import RoutineForm from 'src/components/RoutineForm.vue';
-import { RoutineTask } from 'src/components/models';
+import type { RoutineTask } from 'src/components/models';
 import { useRoutineStore } from 'src/stores/routine-store';
 import { storeToRefs } from 'pinia';
 import { useQuasar } from 'quasar';

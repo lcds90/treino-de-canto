@@ -65,7 +65,7 @@ import { useRoute, useRouter } from 'vue-router'; // Importamos o Roteador
 import { useRoutineStore } from 'src/stores/routine-store';
 import { useWorkoutStore } from 'src/stores/workout-store';
 import { useQuasar } from 'quasar';
-import { RoutineTask } from 'src/components/models';
+import type { RoutineTask } from 'src/components/models';
 
 import RoutineHeader from 'src/components/RoutineHeader.vue';
 import RoutineList from 'src/components/RoutineList.vue';
