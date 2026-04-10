@@ -1,6 +1,7 @@
 // src/services/firebase/FirebaseRoutineService.ts
 import { collection, getDocs, doc, setDoc, deleteDoc, getDoc, addDoc } from 'firebase/firestore';
 import { db } from 'src/boot/firebase';
+
 import type { RoutineTask } from 'src/components/models';
 import type { IRoutineService } from '../interfaces/IRoutineService';
 import type { ILogger } from '../interfaces/ILogger';
@@ -34,26 +35,27 @@ export class FirebaseRoutineService implements IRoutineService {
     });
   }
 
-  async create(task: Omit<RoutineTask, 'id'>): Promise<RoutineTask> {
+   async create(task: Omit<RoutineTask, 'id'>): Promise<RoutineTask> {
     return this.logger.track('CREATE_ROUTINE', this.collectionName, task, async () => {
-      // BLINDAGEM: Se por acaso vier um 'id' no payload, nós o arrancamos fora aqui
-      // para garantir que ele nunca seja salvo DENTRO do documento
       const { id, ...dataToSave } = task as any;
 
+      // Injeta as datas de criação e atualização automaticamente
+      const now = new Date().toISOString();
+      dataToSave.createdAt = now;
+      dataToSave.updatedAt = now;
+
       const docRef = await addDoc(collection(db, this.collectionName), dataToSave);
-      return {
-        ...dataToSave,
-        id: docRef.id
-      } as RoutineTask;
+      return { ...dataToSave, id: docRef.id } as RoutineTask;
     });
   }
 
   async update(task: RoutineTask): Promise<void> {
     return this.logger.track('UPDATE_ROUTINE', `${this.collectionName}/${task.id}`, task, async () => {
       const docRef = doc(db, this.collectionName, task.id);
-
-      // O update já estava blindado tirando o ID, o que é ótimo!
       const { id, ...dataToUpdate } = task;
+
+      // Atualiza a data de modificação
+      dataToUpdate.updatedAt = new Date().toISOString();
 
       await setDoc(docRef, dataToUpdate, { merge: true });
     });

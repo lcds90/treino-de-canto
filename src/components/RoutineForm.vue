@@ -204,8 +204,6 @@ const handleSave = async (preventClose?: boolean) => {
     } else {
       await routineStore.addTask({
         ...formData,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       } as Omit<RoutineTask, 'id'>);
     }
     if (preventClose) {

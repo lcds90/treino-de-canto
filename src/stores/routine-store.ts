@@ -4,14 +4,90 @@ import type { RoutineTask } from 'src/components/models';
 import { routineService } from 'src/services';
 
 export const useRoutineStore = defineStore('routine', () => {
+  // --- STATE ---
   const tasks = ref<RoutineTask[]>([]);
   const isLoading = ref(false);
 
+  // Novo estado: Os filtros ativos agora moram aqui!
+  const activeFilters = ref({
+    search: '',
+    platform: '',
+    createdAt: '',
+    updatedAt: '',
+    sortBy: 'manual'
+  });
+
+  // --- GETTERS (Computed Properties) ---
+
   const isRoutineComplete = computed(() => {
-    return tasks.value.length > 0 && tasks.value.every(task =>
-      task.checklist.every(item => item.done)
+    return (
+      tasks.value.length > 0 &&
+      tasks.value.every((task) => task.checklist.every((item) => item.done))
     );
   });
+
+  const getLocalDateString = (isoString: string) => {
+    const date = new Date(isoString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0'); // getDate() pega o dia no fuso local!
+    return `${year}-${month}-${day}`;
+  };
+
+const filteredTasks = computed(() => {
+    // 1. PRIMEIRO: Filtramos os resultados
+    let result = tasks.value.filter(task => {
+      if (activeFilters.value.search) {
+        const term = activeFilters.value.search.toLowerCase().trim();
+        const checklistTexts = task.checklist.map(c => c.label).join(' ');
+        const everything = `${task.title} ${task.instructions} ${task.mediaUrl} ${checklistTexts}`.toLowerCase();
+        if (!everything.includes(term)) return false;
+      }
+
+      if (activeFilters.value.platform && activeFilters.value.platform !== '') {
+        if (task.platform !== activeFilters.value.platform) return false;
+      }
+
+      if (activeFilters.value.createdAt && task.createdAt) {
+        const taskCreateDay = getLocalDateString(task.createdAt);
+        if (taskCreateDay !== activeFilters.value.createdAt) return false;
+      }
+
+      if (activeFilters.value.updatedAt && task.updatedAt) {
+        const taskUpdateDay = getLocalDateString(task.updatedAt);
+        if (taskUpdateDay !== activeFilters.value.updatedAt) return false;
+      }
+
+      return true;
+    });
+
+    // 2. SEGUNDO: Ordenamos os resultados filtrados
+    result.sort((a, b) => {
+      if (activeFilters.value.sortBy === 'newest') {
+        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+      }
+
+      if (activeFilters.value.sortBy === 'oldest') {
+        return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+      }
+
+      if (activeFilters.value.sortBy === 'alphabetical') {
+        return a.title.localeCompare(b.title);
+      }
+
+      if (activeFilters.value.sortBy === 'reverse-alphabetical') {
+        return b.title.localeCompare(a.title);
+      }
+
+      // Manual: Futuramente você pode adicionar um campo "order" na interface RoutineTask.
+      // Por enquanto, ele apenas respeita a ordem original que veio do Firebase.
+      return (a as any).order - (b as any).order || 0;
+    });
+
+    return result;
+  });
+
+  // --- ACTIONS ---
 
   const fetchTasks = async () => {
     isLoading.value = true;
@@ -36,7 +112,7 @@ export const useRoutineStore = defineStore('routine', () => {
   const removeTask = async (id: string) => {
     try {
       await routineService.delete(id);
-      tasks.value = tasks.value.filter(task => task.id !== id);
+      tasks.value = tasks.value.filter((task) => task.id !== id);
     } catch (error) {
       console.error('Erro ao deletar rotina:', error);
     }
@@ -45,21 +121,19 @@ export const useRoutineStore = defineStore('routine', () => {
   const updateTask = async (updatedTask: RoutineTask) => {
     try {
       await routineService.update(updatedTask);
-      const index = tasks.value.findIndex(task => task.id === updatedTask.id);
+      const index = tasks.value.findIndex((task) => task.id === updatedTask.id);
       if (index !== -1) {
         tasks.value[index] = updatedTask;
       }
     } catch (error) {
       console.error('Erro ao atualizar rotina:', error);
     }
-  }
+  };
 
   const finishRoutineAction = async () => {
     isLoading.value = true;
     try {
-      await Promise.all(
-        tasks.value.map(task => routineService.update(task))
-      );
+      await Promise.all(tasks.value.map((task) => routineService.update(task)));
       console.log('🎉 Treino salvo com sucesso!');
     } catch (error) {
       console.error('Erro ao salvar o treino:', error);
@@ -69,6 +143,8 @@ export const useRoutineStore = defineStore('routine', () => {
   };
 
   return {
+    activeFilters,
+    filteredTasks,
     tasks,
     isLoading,
     isRoutineComplete,
@@ -76,6 +152,6 @@ export const useRoutineStore = defineStore('routine', () => {
     addTask,
     removeTask,
     updateTask,
-    finishRoutineAction
+    finishRoutineAction,
   };
 });

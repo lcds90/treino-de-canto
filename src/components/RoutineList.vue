@@ -79,8 +79,6 @@ const openDuplicateModal = (task: RoutineTask) => {
     routineStore.addTask({
       ...taskData,
       title: `${task.title} (Cópia)`,
-      createdAt: new Date(),
-      updatedAt: new Date()
     });
   });
 };

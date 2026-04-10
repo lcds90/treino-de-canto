@@ -13,8 +13,8 @@ export interface RoutineTask {
   mediaUrl: string       // <-- Mudamos de videoUrl para mediaUrl, pois pode ser um link externo
   instructions: string
   checklist: ChecklistItem[]
-  createdAt: Date
-  updatedAt: Date
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface ChecklistItem {

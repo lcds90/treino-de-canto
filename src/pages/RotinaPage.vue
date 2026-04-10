@@ -2,7 +2,12 @@
   <q-page class="bg-grey-1 q-pa-md">
 
     <RoutineHeader />
-
+<div class="row justify-center">
+      <div class="col-12 col-md-8 col-lg-6">
+        <routine-filters
+         v-model="activeFilters" />
+      </div>
+    </div>
     <RoutineList v-if="!isLoading" :tasks="tasks" />
 
     <div style="height: 100px; width: 100%;"></div>
@@ -20,9 +25,10 @@ import { useRoutineStore } from 'src/stores/routine-store';
 import RoutineHeader from 'src/components/RoutineHeader.vue';
 import RoutineList from 'src/components/RoutineList.vue';
 import RoutineActions from 'src/components/RoutineActions.vue';
+import RoutineFilters from 'src/components/RoutineFilters.vue';
 
 const routineStore = useRoutineStore();
-const { isLoading, tasks } = storeToRefs(routineStore);
+const { activeFilters, filteredTasks: tasks, isLoading } = storeToRefs(routineStore);
 const { fetchTasks, finishRoutineAction } = routineStore;
 
 onMounted(async () => {

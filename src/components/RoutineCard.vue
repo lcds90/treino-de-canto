@@ -4,7 +4,6 @@
       <div class="text-h6 text-weight-bold">{{ task.title }}</div>
 
       <div class="row justify-between q-gutter-x-sm">
-
         <q-btn
           ref="copyBtnRef"
           flat
@@ -43,7 +42,6 @@
         >
           <q-tooltip>Excluir Rotina</q-tooltip>
         </q-btn>
-
       </div>
     </q-card-section>
 
@@ -106,6 +104,21 @@
         </q-item>
       </q-list>
     </q-card-section>
+
+    <q-separator v-if="task.createdAt || task.updatedAt" />
+    <q-card-section
+      v-if="task.createdAt || task.updatedAt"
+      class="q-py-sm bg-grey-1 row justify-between text-caption text-grey-6"
+    >
+      <div v-if="task.createdAt" class="row items-center">
+        <q-icon name="event" class="q-mr-xs" size="xs" />
+        Criado em: {{ formatDate(task.createdAt) }}
+      </div>
+      <div v-if="task.updatedAt" class="row items-center text-right">
+        <q-icon name="update" class="q-mr-xs" size="xs" />
+        Atualizado: {{ formatDate(task.updatedAt) }}
+      </div>
+    </q-card-section>
   </q-card>
 </template>
 
@@ -145,29 +158,24 @@ const animateAction = (btnRef: any, glitterColor: string, onCompleteCallback: ()
   ).to(btnElement, { rotation: 0, duration: 0.05 });
 
   // 2. Geração dos Glitters
-  // Pegamos a posição do botão na tela para criar as partículas no lugar certo
   const rect = btnElement.getBoundingClientRect();
   const centerX = rect.left + rect.width / 2;
   const centerY = rect.top + rect.height / 2;
 
-  // Criamos os elementos de glitter dinamicamente no body
   for (let i = 0; i < 8; i++) {
     const glitter = document.createElement('div');
     glitter.classList.add('action-glitter');
     glitter.style.backgroundColor = glitterColor;
 
-    // Posiciona no centro do botão
     glitter.style.left = `${centerX}px`;
     glitter.style.top = `${centerY}px`;
     document.body.appendChild(glitter);
 
-    // Calcula uma explosão radial aleatória
     const angle = (Math.random() * Math.PI * 2);
     const distance = 30 + Math.random() * 40;
     const destX = Math.cos(angle) * distance;
     const destY = Math.sin(angle) * distance;
 
-    // Anima o glitter usando GSAP solto (não na timeline principal para não travar o callback)
     gsap.to(glitter, {
       x: destX,
       y: destY,
@@ -177,7 +185,7 @@ const animateAction = (btnRef: any, glitterColor: string, onCompleteCallback: ()
       duration: 0.6 + Math.random() * 0.4,
       ease: 'power2.out',
       onComplete: () => {
-        glitter.remove(); // Limpa o DOM quando a animação acabar
+        glitter.remove();
       }
     });
   }
@@ -186,21 +194,18 @@ const animateAction = (btnRef: any, glitterColor: string, onCompleteCallback: ()
 // --- HANDLERS DOS BOTÕES ---
 
 const handleDuplicate = () => {
-  // Azul clarinho/Ciano para duplicar
   animateAction(copyBtnRef.value, '#00E5FF', () => {
     emit('duplicate', props.task);
   });
 };
 
 const handleEdit = () => {
-  // Amarelo/Dourado para editar
   animateAction(editBtnRef.value, '#FFD700', () => {
     emit('edit', props.task);
   });
 };
 
 const handleDelete = () => {
-  // Vermelho para deletar
   animateAction(deleteBtnRef.value, '#FF1744', () => {
     emit('delete', props.task);
   });
@@ -238,6 +243,19 @@ const getPlatformName = (platform: PlatformType) => {
   if (platform === 'yousician') return 'Yousician App';
   return 'Plataforma Externa';
 };
+
+// --- FORMATAÇÃO DE DATA ---
+const formatDate = (dateString?: string) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(date);
+};
 </script>
 
 <style scoped>
@@ -263,7 +281,6 @@ const getPlatformName = (platform: PlatformType) => {
   border-color: #e0e0e0;
 }
 
-/* Garante que os botões não fiquem transparentes demais no hover padrão do Quasar */
 .action-btn:hover {
   opacity: 0.9;
 }
@@ -271,11 +288,11 @@ const getPlatformName = (platform: PlatformType) => {
 
 <style>
 .action-glitter {
-  position: fixed; /* Fixed para não se importar com o scroll local */
+  position: fixed;
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  pointer-events: none; /* Para não atrapalhar cliques */
+  pointer-events: none;
   z-index: 9999;
   box-shadow: 0 0 4px rgba(255,255,255,0.8);
 }
