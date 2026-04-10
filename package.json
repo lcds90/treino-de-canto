@@ -12,7 +12,9 @@
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev -m pwa",
     "build": "quasar build -m pwa",
-    "postinstall": "quasar prepare"
+    "postinstall": "quasar prepare",
+    "e2e:open": "cypress open",
+    "e2e": "cypress run"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
@@ -34,6 +36,7 @@
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.7.0",
     "autoprefixer": "^10.4.27",
+    "cypress": "^15.13.1",
     "eslint": "^9.39.4",
     "eslint-plugin-vue": "^10.8.0",
     "firebase-tools": "^15.14.0",
