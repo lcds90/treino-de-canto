@@ -9,10 +9,11 @@ export type PlatformType = 'youtube' | 'udemy' | 'hotmart' | 'yousician' | 'othe
 export interface RoutineTask {
   id: string
   title: string
-  platform: PlatformType // <-- Nova propriedade
-  mediaUrl: string       // <-- Mudamos de videoUrl para mediaUrl, pois pode ser um link externo
+  platform: PlatformType
+  mediaUrl: string
   instructions: string
   checklist: ChecklistItem[]
+  order?: number
   createdAt?: string
   updatedAt?: string
 }

@@ -1,5 +1,6 @@
 <template>
   <q-page class="bg-grey-1 q-pa-md">
+
     <RoutineHeader />
     <div class="row justify-center sticky-wrapper q-mb-md">
       <div class="col-12 col-md-8 col-lg-6">

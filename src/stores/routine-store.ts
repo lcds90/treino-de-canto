@@ -14,7 +14,7 @@ export const useRoutineStore = defineStore('routine', () => {
     platform: '',
     createdAt: '',
     updatedAt: '',
-    sortBy: 'manual'
+    sortBy: 'manual',
   });
 
   // --- GETTERS (Computed Properties) ---
@@ -34,13 +34,14 @@ export const useRoutineStore = defineStore('routine', () => {
     return `${year}-${month}-${day}`;
   };
 
-const filteredTasks = computed(() => {
+  const filteredTasks = computed(() => {
     // 1. PRIMEIRO: Filtramos os resultados
-    let result = tasks.value.filter(task => {
+    let result = tasks.value.filter((task) => {
       if (activeFilters.value.search) {
         const term = activeFilters.value.search.toLowerCase().trim();
-        const checklistTexts = task.checklist.map(c => c.label).join(' ');
-        const everything = `${task.title} ${task.instructions} ${task.mediaUrl} ${checklistTexts}`.toLowerCase();
+        const checklistTexts = task.checklist.map((c) => c.label).join(' ');
+        const everything =
+          `${task.title} ${task.instructions} ${task.mediaUrl} ${checklistTexts}`.toLowerCase();
         if (!everything.includes(term)) return false;
       }
 
@@ -79,9 +80,7 @@ const filteredTasks = computed(() => {
         return b.title.localeCompare(a.title);
       }
 
-      // Manual: Futuramente você pode adicionar um campo "order" na interface RoutineTask.
-      // Por enquanto, ele apenas respeita a ordem original que veio do Firebase.
-      return (a as any).order - (b as any).order || 0;
+      return (a.order || 0) - (b.order || 0);
     });
 
     return result;
@@ -102,7 +101,8 @@ const filteredTasks = computed(() => {
 
   const addTask = async (newTaskData: Omit<RoutineTask, 'id'>) => {
     try {
-      const createdTask = await routineService.create(newTaskData);
+      const newOrder = tasks.value.length + 1;
+      const createdTask = await routineService.create({ ...newTaskData, order: newOrder });
       tasks.value.push(createdTask);
     } catch (error) {
       console.error('Erro ao criar rotina:', error);
@@ -130,6 +130,25 @@ const filteredTasks = computed(() => {
     }
   };
 
+  const updateTasksOrder = async (reorderedTasks: RoutineTask[]) => {
+    try {
+      // 1. Atualiza a numeração de cada card localmente baseado na nova posição
+      const updatedList = reorderedTasks.map((task, index) => {
+        task.order = index + 1;
+        return task;
+      });
+
+      // 2. Atualiza a tela instantaneamente
+      tasks.value = updatedList;
+
+      // 3. Salva a nova ordem de cada card no Firebase paralelamente
+      await Promise.all(updatedList.map((task) => routineService.update(task)));
+      console.log('✅ Ordem atualizada no banco de dados!');
+    } catch (error) {
+      console.error('Erro ao reordenar:', error);
+    }
+  };
+
   const finishRoutineAction = async () => {
     isLoading.value = true;
     try {
@@ -152,6 +171,7 @@ const filteredTasks = computed(() => {
     addTask,
     removeTask,
     updateTask,
+    updateTasksOrder,
     finishRoutineAction,
   };
 });

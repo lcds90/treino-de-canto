@@ -18,6 +18,16 @@
             :rules="[(val) => !!val || 'O título é obrigatório']"
           />
 
+
+          <div class="row q-col-gutter-sm">
+            <div class="col-10">
+              <q-input v-model="formData.title" label="Título da Aula/Treino *" outlined dense color="primary" :rules="[val => !!val || 'Obrigatorio']" />
+            </div>
+            <div class="col-2">
+              <q-input v-model.number="formData.order" type="number" label="Ordem" outlined dense color="primary" />
+            </div>
+          </div>
+
           <div class="row q-col-gutter-sm">
             <q-select
               v-model="formData.platform"

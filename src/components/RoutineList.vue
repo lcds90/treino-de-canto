@@ -1,38 +1,54 @@
 <template>
   <div>
-    <div class="row q-col-gutter-lg justify-center">
+    <draggable
+      v-model="localTasks"
+      item-key="id"
+      class="row q-col-gutter-lg justify-center"
+      handle=".drag-handle"
+      ghost-class="ghost-card"
+      animation="200"
+      :disabled="isDragDisabled"
+      @end="onDragEnd"
+    >
+      <template #item="{ element, index }">
+        <div
+          class="col-12 col-md-8 col-lg-6 q-mb-lg"
+          :ref="(el) => setCardRef(el, index)"
+        >
+          <RoutineCard
+            :task="element"
+            :totalTasks="tasks.length"
+            @edit="openEditModal"
+            @delete="openDeleteModal"
+            @duplicate="openDuplicateModal"
+          />
+        </div>
+      </template>
 
-      <div
-        v-for="(task, index) in tasks"
-        :key="task.id"
-        class="col-12 col-md-8 col-lg-6 q-mb-lg"
-        :ref="(el) => setCardRef(el, index)"
-      >
-        <RoutineCard :task="task" @edit="openEditModal" @delete="openDeleteModal" @duplicate="openDuplicateModal" />
-      </div>
-
-      <div
-        class="col-12 col-md-8 col-lg-6 q-mb-lg add-card-wrapper"
-        ref="addCardWrapperRef"
-      >
-        <RoutineAdd @click="openCreateModal" />
-      </div>
-
-    </div>
+      <template #footer>
+        <div
+          class="col-12 col-md-8 col-lg-6 q-mb-lg add-card-wrapper"
+          ref="addCardWrapperRef"
+        >
+          <RoutineAdd @click="openCreateModal" />
+        </div>
+      </template>
+    </draggable>
 
     <RoutineForm v-model="isDialogOpen" @saved="onTaskSaved" :task-to-edit="selectedTask" />
-
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue';
+import { ref, watch, nextTick, computed } from 'vue';
+import draggable from 'vuedraggable'; // Biblioteca de arrastar e soltar
 import gsap from 'gsap';
 import RoutineCard from 'src/components/RoutineCard.vue';
 import RoutineAdd from 'src/components/RoutineAdd.vue';
 import RoutineForm from 'src/components/RoutineForm.vue';
 import { RoutineTask } from 'src/components/models';
 import { useRoutineStore } from 'src/stores/routine-store';
+import { storeToRefs } from 'pinia';
 import { useQuasar } from 'quasar';
 
 const props = defineProps<{
@@ -43,8 +59,36 @@ const cardsRefs = ref<HTMLElement[]>([]);
 const addCardWrapperRef = ref<HTMLElement | null>(null);
 const isDialogOpen = ref(false);
 const selectedTask = ref<RoutineTask | null>(null);
+
 const routineStore = useRoutineStore();
+const { activeFilters } = storeToRefs(routineStore); // Necessário para a trava de segurança do drag
 const $q = useQuasar();
+
+// --- LÓGICA DO DRAG AND DROP ---
+
+// O draggable precisa de um array mutável local para não quebrar o Vue
+const localTasks = ref<RoutineTask[]>([]);
+
+// Mantém o array local sincronizado com a prop
+watch(() => props.tasks, (newTasks) => {
+  localTasks.value = [...newTasks];
+}, { immediate: true, deep: true });
+
+// Bloqueia o arrastar se a tela estiver filtrada ou ordenada diferente de "Manual"
+const isDragDisabled = computed(() => {
+  return activeFilters.value.search !== '' ||
+         activeFilters.value.platform !== '' ||
+         activeFilters.value.sortBy !== 'manual';
+});
+
+// Ação disparada ao soltar o card
+const onDragEnd = async () => {
+  await routineStore.updateTasksOrder(localTasks.value);
+};
+
+
+// --- LÓGICA DE MODAIS ---
+
 const openCreateModal = () => {
   selectedTask.value = null; // Garante que está vazio para criar
   isDialogOpen.value = true;
@@ -67,7 +111,6 @@ const openDeleteModal = (task: RoutineTask) => {
   });
 };
 
-
 const openDuplicateModal = (task: RoutineTask) => {
   $q.dialog({
     title: 'Confirmar duplicação',
@@ -75,7 +118,7 @@ const openDuplicateModal = (task: RoutineTask) => {
     cancel: true,
     persistent: true
   }).onOk(() => {
-    const { id, createdAt, updatedAt, ...taskData } = task;
+    const { id, createdAt, updatedAt, order, ...taskData } = task; // Retiramos o order também para ir pro final da lista
     routineStore.addTask({
       ...taskData,
       title: `${task.title} (Cópia)`,
@@ -83,6 +126,8 @@ const openDuplicateModal = (task: RoutineTask) => {
   });
 };
 
+
+// --- ANIMAÇÕES (GSAP) ---
 
 const setCardRef = (componentInstance: any, index: number) => {
   if (componentInstance) {
@@ -95,8 +140,10 @@ watch(() => props.tasks, async (newTasks) => {
   if (newTasks.length > 0) {
     await nextTick();
 
-    // Array com todos os cards normais + o card pontilhado de adicionar
-    const allElementsToAnimate = [...cardsRefs.value];
+    // Limpa refs indefinidos para evitar erros no GSAP
+    const validCardsRefs = cardsRefs.value.filter(el => el !== null && el !== undefined);
+
+    const allElementsToAnimate = [...validCardsRefs];
     if (addCardWrapperRef.value) {
       allElementsToAnimate.push(addCardWrapperRef.value);
     }
@@ -112,10 +159,9 @@ watch(() => props.tasks, async (newTasks) => {
   }
 }, { immediate: true });
 
-// Opcional: Feedback visual extra quando salva uma nova tarefa
+// Feedback visual extra quando salva uma nova tarefa
 const onTaskSaved = () => {
   console.log('Nova rotina injetada com sucesso!');
-  // A store já atualizou a reatividade, então o novo card vai aparecer automaticamente.
 };
 </script>
 
@@ -124,5 +170,13 @@ const onTaskSaved = () => {
   /* Garante que o card pontilhado acompanhe a altura do conteúdo se necessário */
   display: flex;
   flex-direction: column;
+}
+
+/* Classe aplicada visualmente ao card enquanto ele está flutuando (sendo arrastado) */
+.ghost-card {
+  opacity: 0.4;
+  background-color: #f0f0f0;
+  border: 2px dashed var(--q-primary);
+  border-radius: 16px;
 }
 </style>

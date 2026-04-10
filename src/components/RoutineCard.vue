@@ -1,7 +1,29 @@
 <template>
-  <q-card class="routine-card shadow-4 text-left">
+  <q-card class="routine-card shadow-4 text-left" bordered>
+
     <q-card-section class="bg-secondary text-white row items-center justify-between">
-      <div class="text-h6 text-weight-bold">{{ task.title }}</div>
+
+      <div class="row items-center">
+                <q-btn
+          ref="copyBtnRef"
+          flat
+          round
+          dense
+          icon="drag_indicator"
+          color="white"
+          class="action-btn drag-handle"
+          @click="handleDuplicate"
+        >
+          <q-tooltip>Ordenar Rotina</q-tooltip>
+        </q-btn>
+
+        <div class="text-h6 text-weight-bold">
+          {{ task.title }}
+          <q-badge color="white" text-color="secondary" class="q-ml-sm text-weight-bold" align="middle">
+            {{ task.order || 1 }} / {{ totalTasks }}
+          </q-badge>
+        </div>
+      </div>
 
       <div class="row justify-between q-gutter-x-sm">
         <q-btn
@@ -131,6 +153,7 @@ import { useRoutineStore } from 'src/stores/routine-store';
 
 const props = defineProps<{
   task: RoutineTask;
+  totalTasks: number;
 }>();
 
 const emit = defineEmits(['edit', 'delete', 'duplicate']);
@@ -211,7 +234,6 @@ const handleDelete = () => {
   });
 };
 
-
 // --- SINCRONIZAÇÃO DO CHECKLIST ---
 const syncChecklistToDatabase = async () => {
   try {
@@ -220,7 +242,6 @@ const syncChecklistToDatabase = async () => {
     console.error('Erro ao sincronizar o checklist:', error);
   }
 };
-
 
 // --- HELPERS DE PLATAFORMA ---
 const getPlatformIcon = (platform: PlatformType) => {
@@ -283,6 +304,14 @@ const formatDate = (dateString?: string) => {
 
 .action-btn:hover {
   opacity: 0.9;
+}
+
+/* Cursores para a área de arrastar */
+.drag-handle {
+  cursor: grab;
+}
+.drag-handle:active {
+  cursor: grabbing;
 }
 </style>
 
