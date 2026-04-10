@@ -75,7 +75,7 @@
       </div>
     </q-card-section>
 
-    <q-video v-if="task.platform === 'youtube'" :src="task.mediaUrl" :ratio="16 / 9" />
+    <q-video v-if="task.platform === 'youtube'" :src="getEmbedUrl(task.mediaUrl)" :ratio="16 / 9" />
 
     <q-card-section
       v-else
@@ -273,6 +273,28 @@ const getPlatformName = (platform: PlatformType) => {
   if (platform === 'hotmart') return 'Hotmart';
   if (platform === 'yousician') return 'Yousician App';
   return 'Plataforma Externa';
+};
+
+// --- FORMATADOR DE URL DO YOUTUBE ---
+const getEmbedUrl = (url?: string) => {
+  if (!url) return '';
+
+  // Se já for um link de embed, retorna direto
+  if (url.includes('/embed/')) return url;
+
+  // Se for link copiado pelo celular (youtu.be/ID)
+  if (url.includes('youtu.be/')) {
+    const videoId = url.split('youtu.be/')[1]?.split('?')[0];
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+
+  // Se for link padrão do navegador (youtube.com/watch?v=ID)
+  if (url.includes('watch?v=')) {
+    const videoId = url.split('watch?v=')[1]?.split('&')[0];
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+
+  return url;
 };
 
 // --- FORMATAÇÃO DE DATA ---
