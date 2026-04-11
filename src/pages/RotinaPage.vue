@@ -11,6 +11,10 @@
       />
     </div>
 
+    <div v-if="isAllowInjectMock" class="q mb-md">
+      <MockDataInjector />
+    </div>
+
     <div class="text-center q-mb-xl q-mt-sm">
       <h1 class="text-h4 text-weight-bold text-primary q-mb-sm">
         {{ isReadOnly ? '📋 Resumo do Treino' : workoutTitle }}
@@ -73,6 +77,7 @@ import RoutineActions from 'src/components/RoutineActions.vue';
 import RoutineFilters from 'src/components/RoutineFilters.vue';
 import WorkoutHistory from 'src/components/WorkoutHistory.vue';
 import { useSettingsStore } from 'src/stores/settings-store';
+import MockDataInjector from 'src/components/debug/MockDataInjector.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -92,6 +97,7 @@ const snapshotTasks = ref<RoutineTask[]>([]); // Tarefas congeladas do treino
 // 🧠 A Mágica do Modo Leitura
 const workoutId = computed(() => route.params.id as string | undefined);
 const isReadOnly = computed(() => !!workoutId.value);
+const isAllowInjectMock = ref(process.env.DEV && !isReadOnly.value);
 
 // Determina qual lista de tarefas mostrar na tela
 const currentTasks = computed(() => {

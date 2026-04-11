@@ -1,4 +1,3 @@
-// src/stores/routine-store.ts
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { RoutineTask } from 'src/components/models';
@@ -67,11 +66,15 @@ export const useRoutineStore = defineStore('routine', () => {
 
   const addTask = async (newTaskData: Omit<RoutineTask, 'id'>) => {
     try {
+      isLoading.value = true;
+
       const newOrder = tasks.value.length + 1;
       const createdTask = await routineService.create({ ...newTaskData, order: newOrder });
       tasks.value.push(createdTask);
     } catch (error) {
       console.error('Erro ao criar rotina:', error);
+    } finally {
+      isLoading.value = false;
     }
   };
 
@@ -102,7 +105,11 @@ export const useRoutineStore = defineStore('routine', () => {
   const removeTask = async (id: string) => {
     try {
       await routineService.delete(id);
-      tasks.value = tasks.value.filter(task => task.id !== id);
+      const reordered = tasks.value
+        .filter(task => task.id !== id)
+        .map((task, index) => ({ ...task, order: index + 1 }));
+      tasks.value = reordered;
+      await updateTasksOrder(reordered);
     } catch (error) {
       console.error('Erro ao deletar rotina:', error);
     }

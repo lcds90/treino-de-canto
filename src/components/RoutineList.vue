@@ -124,7 +124,7 @@ const openDuplicateModal = (task: RoutineTask) => {
     persistent: true
   }).onOk(() => {
     const { id, createdAt, updatedAt, order, ...taskData } = task; // Retiramos o order também para ir pro final da lista
-    routineStore.addTask({
+    void routineStore.addTask({
       ...taskData,
       title: `${task.title} (Cópia)`,
     });
@@ -143,9 +143,7 @@ const setCardRef = (componentInstance: any, index: number) => {
 // Observa as tasks para a animação inicial de entrada
 watch(() => props.tasks, async (newTasks) => {
   if (newTasks.length > 0) {
-    await nextTick();
 
-    // Limpa refs indefinidos para evitar erros no GSAP
     const validCardsRefs = cardsRefs.value.filter(el => el !== null && el !== undefined);
 
     const allElementsToAnimate = [...validCardsRefs];
@@ -159,7 +157,7 @@ watch(() => props.tasks, async (newTasks) => {
       duration: 0.6,
       stagger: 0.2,
       ease: 'back.out(1.2)',
-      delay: 0.3
+      clearProps: 'all'
     });
   }
 }, { immediate: true });
