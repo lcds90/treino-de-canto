@@ -4,13 +4,13 @@ import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC4CaHqMFodB6_9hw5p8u3F9w3h5L8i5Ew",
-  authDomain: "rotina-canto.firebaseapp.com",
-  projectId: "rotina-canto",
-  storageBucket: "rotina-canto.firebasestorage.app",
-  messagingSenderId: "738031758900",
-  appId: "1:738031758900:web:4739ebdeaaaeb8f9fa6461",
-  measurementId: "G-YJEMFQZK8B"
+  apiKey: process.env.API_KEY || '',
+  authDomain: process.env.AUTH_DOMAIN || '',
+  projectId: process.env.PROJECT_ID || '',
+  storageBucket: process.env.STORAGE_BUCKET || '',
+  messagingSenderId: process.env.MESSAGING_SENDER_ID || '',
+  appId: process.env.APP_ID || '',
+  measurementId: process.env.MEASUREMENT_ID || '',
 };
 
 const app = initializeApp(firebaseConfig);

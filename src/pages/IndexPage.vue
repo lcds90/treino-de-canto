@@ -31,6 +31,7 @@
         unelevated
         class="study-btn shadow-4"
         @click="startStudy"
+        v-test="'start-study-btn'"
       >
         <span class="text-weight-bold text-h6">Começar Treino 🚀</span>
       </q-btn>
