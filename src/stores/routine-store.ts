@@ -1,3 +1,4 @@
+
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { RoutineTask } from 'src/components/models';
@@ -115,6 +116,16 @@ export const useRoutineStore = defineStore('routine', () => {
     }
   };
 
+  const resetAllChecklists = () => {
+    tasks.value.forEach(task => {
+      if (task.checklist && task.checklist.length > 0) {
+        task.checklist.forEach(item => {
+          item.done = false;
+        });
+      }
+    });
+  };
+
   return {
     tasks,
     isLoading,
@@ -124,6 +135,7 @@ export const useRoutineStore = defineStore('routine', () => {
     addTask,
     updateTask,
     updateTasksOrder,
-    removeTask
+    removeTask,
+    resetAllChecklists,
   };
 });

@@ -21,8 +21,28 @@
       </div>
     </div>
 
-    <div class="row justify-center q-mb-xl">
-      <q-btn
+    <div class="row justify-center items-center q-mb-xl">
+      <transition
+        appear
+        enter-active-class="animated bounceInDown"
+        leave-active-class="animated fadeOut"
+      >
+        <div v-show="workoutStore.hasTrainedToday" class="row justify-center q-mr-sm">
+          <div class="text-center q-mb-sm">
+            <div class="text-h5 text-weight-bolder text-positive flex flex-center justify-center">
+              <q-icon name="emoji_events" size="md" class="q-mr-sm" />
+              Treino de hoje foi concluído!
+            </div>
+            <div :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-7'" class="text-caption">
+              Excelente trabalho! O seu progresso já está salvo no histórico.
+            </div>
+          </div>
+
+          <TodayWorkoutSummary />
+        </div>
+      </transition>
+      <div class="row justify-center items-center">
+        <q-btn
         ref="btnRef"
         color="secondary"
         text-color="white"
@@ -33,8 +53,11 @@
         @click="startStudy"
         v-test="'start-study-btn'"
       >
-        <span class="text-weight-bold text-h6">Começar Treino 🚀</span>
+        <span class="text-weight-bold text-h6">
+         {{ workoutStore.hasTrainedToday ? 'Treinar Novamente' : 'Começar Treino' }} 🚀
+        </span>
       </q-btn>
+      </div>
     </div>
 
     <div class="row justify-center max-width-container mx-auto" ref="historyRef">
@@ -75,17 +98,7 @@ const heroRef = ref<HTMLElement | null>(null);
 const btnRef = ref<any | null>(null);
 const historyRef = ref<any | null>(null);
 
-onMounted(async () => {
-  // 1. Busca os treinos com segurança
-  try {
-    if (workoutStore.sessions.length === 0) {
-      await workoutStore.fetchSessions();
-    }
-  } catch (error) {
-    console.error('Erro ao buscar histórico:', error);
-  }
-
-  // 2. Aguarda um instante pro DOM renderizar, aí sim chama o GSAP
+onMounted(() => {
   setTimeout(() => {
     if (heroRef.value && btnRef.value && historyRef.value) {
       const tl = gsap.timeline();

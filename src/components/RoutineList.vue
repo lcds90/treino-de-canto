@@ -140,8 +140,7 @@ const setCardRef = (componentInstance: any, index: number) => {
   }
 };
 
-// Observa as tasks para a animação inicial de entrada
-watch(() => props.tasks, async (newTasks) => {
+watch(() => props.tasks, (newTasks) => {
   if (newTasks.length > 0) {
 
     const validCardsRefs = cardsRefs.value.filter(el => el !== null && el !== undefined);

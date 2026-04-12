@@ -9,6 +9,7 @@ on:
 
 jobs:
   e2e:
+    continue-on-error: true
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout

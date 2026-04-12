@@ -31,9 +31,16 @@ export interface WorkoutMetrics {
   uncompleted: number;
 }
 
+export interface WoroutTiming {
+    durationSeconds: number;
+    start: string | Date;
+    end: string | Date;
+}
+
 export interface WorkoutSession {
   id?: string;
   date: string; // Data ISO de quando o treino foi finalizado
   metrics: WorkoutMetrics;
   tasksSnapshot: RoutineTask[]; // A "foto" dos cards no momento da finalização
+  timing?: WoroutTiming;
 }

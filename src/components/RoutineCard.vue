@@ -128,7 +128,6 @@
             <AnimatedCheckbox
               v-model="item.done"
               :label="item.label"
-              @update:model-value="syncChecklistToDatabase"
             />
           </q-item-section>
         </q-item>
@@ -157,7 +156,6 @@ import { ref } from 'vue';
 import gsap from 'gsap';
 import AnimatedCheckbox from './AnimatedCheckbox.vue';
 import type { RoutineTask, PlatformType } from './models';
-import { useRoutineStore } from 'src/stores/routine-store';
 
 const props = defineProps<{
   task: RoutineTask;
@@ -166,7 +164,6 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(['edit', 'delete', 'duplicate']);
-const routineStore = useRoutineStore();
 
 // --- REFERÊNCIAS DOS BOTÕES ---
 const copyBtnRef = ref<any | null>(null);
@@ -242,15 +239,6 @@ const handleDelete = () => {
   animateAction(deleteBtnRef.value, '#FF1744', () => {
     emit('delete', props.task);
   });
-};
-
-// --- SINCRONIZAÇÃO DO CHECKLIST ---
-const syncChecklistToDatabase = async () => {
-  try {
-    await routineStore.updateTask(props.task);
-  } catch (error) {
-    console.error('Erro ao sincronizar o checklist:', error);
-  }
 };
 
 // --- HELPERS DE PLATAFORMA ---

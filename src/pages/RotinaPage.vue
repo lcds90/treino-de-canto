@@ -16,26 +16,28 @@
     </div>
 
     <div class="text-center q-mb-xl q-mt-sm">
-      <h1 class="text-h4 text-weight-bold text-primary q-mb-sm">
-        {{ isReadOnly ? '📋 Resumo do Treino' : workoutTitle }}
-      </h1>
-      <p
-        :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-7'"
-        class="text-subtitle1"
-        v-if="!isReadOnly"
-      >
-        {{ workoutSubtitle }}
-      </p>
-      <p :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-7'" class="text-subtitle1" v-else>
-        Visualizando o registro de um treino finalizado.
-      </p>
+      <template v-if="isReadOnly">
+        <h1 class="text-h4 text-weight-bold text-primary q-mb-sm">📋 Resumo do Treino</h1>
+        <p :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-7'" class="text-subtitle1">
+          Visualizando o registro de um treino finalizado.
+        </p>
+        <WorkoutSummary :session="workoutStore.getSessionById"/>
+      </template>
+      <template v-else>
+        <h1 class="text-h4 text-weight-bold text-primary q-mb-sm">
+          {{ workoutTitle }}
+        </h1>
+        <p :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-7'" class="text-subtitle1">
+          {{ workoutSubtitle }}
+        </p>
+      </template>
     </div>
 
     <q-banner
       inline-actions
       rounded
       class="banner-width"
-      v-if="!isReadOnly && workoutStore.hasTrainedToday"
+      v-if="shouldShowHistory"
     >
       <p class="text-body2 q-mb-none">{{ bannerTitle }}</p>
       <p class="text-caption q-mb-none">{{ bannerSubtitle }}</p>
@@ -78,6 +80,7 @@ import RoutineFilters from 'src/components/RoutineFilters.vue';
 import WorkoutHistory from 'src/components/WorkoutHistory.vue';
 import { useSettingsStore } from 'src/stores/settings-store';
 import MockDataInjector from 'src/components/debug/MockDataInjector.vue';
+import WorkoutSummary from 'src/components/WorkoutSummary.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -98,7 +101,7 @@ const snapshotTasks = ref<RoutineTask[]>([]); // Tarefas congeladas do treino
 const workoutId = computed(() => route.params.id as string | undefined);
 const isReadOnly = computed(() => !!workoutId.value);
 const isAllowInjectMock = ref(process.env.DEV && !isReadOnly.value);
-
+const shouldShowHistory = computed(() => !isReadOnly.value && workoutStore.hasTrainedToday && !workoutStore.isWorkoutActive)
 // Determina qual lista de tarefas mostrar na tela
 const currentTasks = computed(() => {
   return isReadOnly.value ? snapshotTasks.value : filteredTasks.value;
