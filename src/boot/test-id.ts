@@ -5,7 +5,6 @@ import { defineBoot } from '#q-app/wrappers';
 export default defineBoot(({ app }) => {
   app.directive('test', {
     mounted(el, binding) {
-      console.log(process.env, import.meta.env);
       if (process.env.DEV) {
         el.setAttribute('data-test', binding.value);
       }

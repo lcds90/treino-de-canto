@@ -101,7 +101,6 @@ const openCreateModal = () => {
 
 const openEditModal = (task: RoutineTask) => {
   selectedTask.value = task; // Preenche para editar
-  console.log('Editando tarefa:', task);
   isDialogOpen.value = true;
 };
 

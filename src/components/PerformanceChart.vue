@@ -108,7 +108,6 @@ watch(
   () => $q.dark.isActive,
   () => {
     if (hasValidData.value && chart.value) {
-      console.log(chart.value);
       chart.value.refresh();
     }
   },
