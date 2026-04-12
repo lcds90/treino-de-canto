@@ -20,6 +20,17 @@ jobs:
         with:
           node-version: '24'
           
+      # 1. Cria o .env para que o Cypress consiga rodar com o Firebase
+      - name: Inject Environment Variables for E2E
+        run: |
+          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+          echo "AUTH_DOMAIN=${{ secrets.AUTH_DOMAIN }}" >> .env
+          echo "PROJECT_ID=${{ secrets.PROJECT_ID }}" >> .env
+          echo "STORAGE_BUCKET=${{ secrets.STORAGE_BUCKET }}" >> .env
+          echo "MESSAGING_SENDER_ID=${{ secrets.MESSAGING_SENDER_ID }}" >> .env
+          echo "APP_ID=${{ secrets.APP_ID }}" >> .env
+          echo "MEASUREMENT_ID=${{ secrets.MEASUREMENT_ID }}" >> .env
+          
       - name: Cypress run
         uses: cypress-io/github-action@v7
         with:
@@ -36,8 +47,20 @@ jobs:
          uses: actions/setup-node@v4
          with:
            node-version: '24'
-  
+
+       # 2. Cria o .env para o Build Oficial que vai para o Firebase Hosting
+       - name: Inject Environment Variables for Production
+         run: |
+           echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+           echo "AUTH_DOMAIN=${{ secrets.AUTH_DOMAIN }}" >> .env
+           echo "PROJECT_ID=${{ secrets.PROJECT_ID }}" >> .env
+           echo "STORAGE_BUCKET=${{ secrets.STORAGE_BUCKET }}" >> .env
+           echo "MESSAGING_SENDER_ID=${{ secrets.MESSAGING_SENDER_ID }}" >> .env
+           echo "APP_ID=${{ secrets.APP_ID }}" >> .env
+           echo "MEASUREMENT_ID=${{ secrets.MEASUREMENT_ID }}" >> .env
+             
        - run: npm ci && npm run build
+       
        - uses: FirebaseExtended/action-hosting-deploy@v0
          with:
            repoToken: ${{ secrets.GITHUB_TOKEN }}
