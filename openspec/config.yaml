@@ -10,9 +10,14 @@ context: |
   Tests: Cypress
 
 rules:
+  design:
+    - OBRIGATÓRIO: O design técnico DEVE conter pelo menos um diagrama de blocos ou de fluxo usando sintaxe ```mermaid.
+    - Utilize cabeçalhos Markdown claros (## e ###) para facilitar a geração do Outline (Índice) automático no VS Code.
   proposal:
     - Include rollback plan
     - Identify affected teams
+    - Resuma o impacto visual e as conexões da nova funcionalidade com os módulos existentes.
   specs:
     - Use Given/When/Then format
     - Reference existing patterns before inventing new ones
+    - Quando atualizar a Fonte da Verdade (spec.md), garanta que os diagramas Mermaid sejam atualizados para refletir o novo fluxo.
