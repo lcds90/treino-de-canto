@@ -1,18 +1,4 @@
-# workout-timer Specification
-
-## Purpose
-TBD - created by archiving change fix-treino-completo-horario-errado. Update Purpose after archive.
-## Requirements
-### Requirement: Exibição Correta do Tempo do Cronômetro
-O sistema SHALL exibir o tempo de treino formatado corretamente em horas, minutos e segundos. Os minutos e segundos SHALL ser limitados entre 0 e 59.
-
-#### Scenario: Exibição de Tempo com Menos de uma Hora
-- **WHEN** o tempo de treino decorrido for de 14 minutos e 22 segundos (862 segundos)
-- **THEN** o cronômetro SHALL exibir formatado como `14:22`.
-
-#### Scenario: Exibição de Tempo com Mais de uma Hora
-- **WHEN** o tempo de treino decorrido for de 1 hora, 14 minutos e 22 segundos (4462 segundos)
-- **THEN** o cronômetro SHALL exibir formatado como `01:14:22`.
+## ADDED Requirements
 
 ### Requirement: Restrição de Checklist ao Treino Ativo
 O sistema SHALL impedir que itens da checklist de tarefas sejam marcados como concluídos se o cronômetro do treino não estiver ativo. O sistema SHALL solicitar confirmação para iniciar o treino caso o usuário tente interagir com um item desmarcado.
@@ -28,4 +14,3 @@ O sistema SHALL impedir que itens da checklist de tarefas sejam marcados como co
 #### Scenario: Cancelar início de treino no diálogo
 - **WHEN** o usuário cancelar a inicialização do treino no diálogo de confirmação
 - **THEN** o sistema SHALL manter o cronômetro inativo e o item da checklist desmarcado.
-

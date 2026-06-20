@@ -43,6 +43,7 @@ interface Emits {
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
   label: { type: String, default: '' },
+  beforeToggle: { type: Function, default: null },
 });
 
 const emits = defineEmits<Emits>();
@@ -66,8 +67,12 @@ const setParticleRef = (el: any, index: number) => {
   if (el) particlesRefs.value[index] = el;
 };
 
-const toggleChecked = () => {
+const toggleChecked = async () => {
   const newState = !isCheckedInternal.value;
+  if (props.beforeToggle) {
+    const allowed = await props.beforeToggle(newState);
+    if (!allowed) return;
+  }
   isCheckedInternal.value = newState;
   if (newState) {
     playCheckAnimation();

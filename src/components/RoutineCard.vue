@@ -128,6 +128,7 @@
             <AnimatedCheckbox
               v-model="item.done"
               :label="item.label"
+              :beforeToggle="beforeChecklistToggle"
             />
           </q-item-section>
         </q-item>
@@ -156,6 +157,9 @@ import { ref } from 'vue';
 import gsap from 'gsap';
 import AnimatedCheckbox from './AnimatedCheckbox.vue';
 import type { RoutineTask, PlatformType } from './models';
+import { useQuasar } from 'quasar';
+import { useWorkoutStore } from 'src/stores/workout-store';
+import { useRoutineStore } from 'src/stores/routine-store';
 
 const props = defineProps<{
   task: RoutineTask;
@@ -164,6 +168,37 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(['edit', 'delete', 'duplicate']);
+
+const $q = useQuasar();
+const workoutStore = useWorkoutStore();
+const routineStore = useRoutineStore();
+
+const beforeChecklistToggle = (newValue: boolean): Promise<boolean> | boolean => {
+  if (!newValue) return true;
+  if (workoutStore.isWorkoutActive) return true;
+
+  return new Promise<boolean>((resolve) => {
+    $q.dialog({
+      title: 'Iniciar Treino? 🚀',
+      message: 'Você ainda não iniciou o treino de hoje. Deseja iniciar o treino agora para começar a marcar os exercícios?',
+      cancel: { label: 'Cancelar', color: 'grey-7', flat: true },
+      ok: { label: 'Iniciar Treino', color: 'primary', unelevated: true },
+      persistent: true,
+    })
+      .onOk(() => {
+        routineStore.resetAllChecklists();
+        workoutStore.startTimer();
+        $q.notify({
+          type: 'positive',
+          message: '🚀 Treino iniciado!',
+        });
+        resolve(true);
+      })
+      .onCancel(() => {
+        resolve(false);
+      });
+  });
+};
 
 // --- REFERÊNCIAS DOS BOTÕES ---
 const copyBtnRef = ref<any | null>(null);
