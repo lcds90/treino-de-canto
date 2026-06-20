@@ -3,6 +3,31 @@
 O componente `AnimatedCheckbox` é responsável por renderizar a caixa de checklist de forma estilizada e disparar as animações ao marcar um item. Atualmente, ele gerencia seu estado e clique internamente e depois emite as alterações para o componente pai.
 Para impor a regra de negócio de que um treino deve estar ativo, precisamos interceptar o evento de clique/marcação para exibir o diálogo de confirmação do Quasar.
 
+```mermaid
+sequenceDiagram
+    participant User as Usuário
+    participant Card as RoutineCard
+    participant Check as AnimatedCheckbox
+    participant Store as WorkoutStore (Pinia)
+
+    User->>Check: Clica no Checkbox
+    Check->>Card: Executa beforeToggle(newState)
+    alt Treino já ativo
+        Card->>Check: Retorna true
+        Check->>Check: Inicia animação e atualiza v-model
+    else Treino inativo
+        Card->>User: Exibe Quasar Dialog
+        alt Usuário confirma
+            Card->>Store: Inicia timer (startTimer)
+            Card->>Check: Retorna true
+            Check->>Check: Inicia animação e atualiza v-model
+        else Usuário cancela
+            Card->>Check: Retorna false
+            Check->>Check: Aborta marcação (não altera estado)
+        end
+    end
+```
+
 ## Goals / Non-Goals
 
 **Goals:**

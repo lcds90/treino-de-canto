@@ -2,6 +2,23 @@
 
 ## Purpose
 TBD - created by archiving change add-firebase-auth-email. Update Purpose after archive.
+
+## Diagrams
+```mermaid
+flowchart TD
+    A[Usuário acessa rota] --> B{Rota é protegida?}
+    B -- Não --> C[Permite acesso]
+    B -- Sim --> D{Usuário autenticado?}
+    D -- Sim --> C
+    D -- Não --> E[Redireciona para /login]
+    
+    F[Página de Cadastro / Login] --> G{Dados válidos?}
+    G -- Sim --> H[Autentica no Firebase Auth]
+    H --> I[Atualiza estado no Pinia Store]
+    I --> J[Redireciona para Rota Protegida]
+    G -- Não --> K[Exibe erro de validação]
+```
+
 ## Requirements
 ### Requirement: Email and Password Registration
 The system SHALL allow users to sign up using an email address and a password. The system SHALL validate that the email is in a valid format and the password is at least 6 characters long.
