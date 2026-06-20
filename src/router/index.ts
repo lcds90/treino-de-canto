@@ -6,6 +6,7 @@ import {
   createWebHistory,
 } from 'vue-router';
 import routes from './routes';
+import { useAuthStore } from 'src/stores/auth-store';
 
 /*
  * If not building with SSR mode, you can
@@ -16,7 +17,7 @@ import routes from './routes';
  * with the Router instance.
  */
 
-export default defineRouter((/* { store, ssrContext } */) => {
+export default defineRouter(({ store }) => {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory);
@@ -29,6 +30,24 @@ export default defineRouter((/* { store, ssrContext } */) => {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
+  });
+
+  Router.beforeEach(async (to, from, next) => {
+    const authStore = useAuthStore(store);
+
+    // Wait until firebase auth state listener has resolved
+    await authStore.isReady;
+
+    const isAuthenticated = authStore.isAuthenticated;
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+
+    if (requiresAuth && !isAuthenticated) {
+      next({ name: 'login' });
+    } else if ((to.name === 'login' || to.name === 'register') && isAuthenticated) {
+      next({ name: 'index' });
+    } else {
+      next();
+    }
   });
 
   return Router;
