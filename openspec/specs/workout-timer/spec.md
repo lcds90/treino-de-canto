@@ -2,6 +2,20 @@
 
 ## Purpose
 TBD - created by archiving change fix-treino-completo-horario-errado. Update Purpose after archive.
+
+## Diagrams
+```mermaid
+flowchart TD
+    A[Usuário clica em item da checklist] --> B{Treino está ativo?}
+    B -- Sim --> C[Marca o item da checklist]
+    B -- Não --> D[Exibe diálogo de confirmação]
+    D --> E{Usuário confirma?}
+    E -- Sim --> F[Limpa checklists anteriores]
+    F --> G[Inicia o timer de treino]
+    G --> H[Marca o item da checklist]
+    E -- Não --> I[Mantém o item desmarcado]
+```
+
 ## Requirements
 ### Requirement: Exibição Correta do Tempo do Cronômetro
 O sistema SHALL exibir o tempo de treino formatado corretamente em horas, minutos e segundos. Os minutos e segundos SHALL ser limitados entre 0 e 59.
