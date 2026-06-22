@@ -2,7 +2,8 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { RoutineTask } from 'src/components/models';
-import { routineService } from 'src/services';
+import { routineService, templateService } from 'src/services';
+import { DEFAULT_LESSONS } from 'src/data/defaultLessons';
 
 const getLocalDateString = (isoString: string | Date) => {
   const date = new Date(isoString);
@@ -14,6 +15,7 @@ const getLocalDateString = (isoString: string | Date) => {
 
 export const useRoutineStore = defineStore('routine', () => {
   const tasks = ref<RoutineTask[]>([]);
+  const templates = ref<RoutineTask[]>([]);
   const isLoading = ref(false);
 
   const activeFilters = ref({
@@ -46,7 +48,7 @@ export const useRoutineStore = defineStore('routine', () => {
 
     result.sort((a, b) => {
       if (activeFilters.value.sortBy === 'newest') return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
-      if (activeFilters.value.sortBy === 'oldest') return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+      if (activeFilters.value.sortBy === 'oldest') return new Date(a.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
       if (activeFilters.value.sortBy === 'alphabetical') return a.title.localeCompare(b.title);
       return ((a as any).order || 0) - ((b as any).order || 0);
     });
@@ -126,8 +128,128 @@ export const useRoutineStore = defineStore('routine', () => {
     });
   };
 
+  // --- AÇÕES DO ACERVO DE TEMPLATES ---
+
+  const fetchTemplates = async () => {
+    isLoading.value = true;
+    try {
+      templates.value = await templateService.getAll();
+    } catch (error) {
+      console.error('Erro ao buscar acervo de lições:', error);
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const importTaskFromTemplate = async (template: Omit<RoutineTask, 'id'>) => {
+    try {
+      isLoading.value = true;
+      const cleanTemplate = { ...template } as any;
+      delete cleanTemplate.id;
+      delete cleanTemplate.createdAt;
+      delete cleanTemplate.updatedAt;
+
+      const newOrder = tasks.value.length + 1;
+      const createdTask = await routineService.create({
+        ...cleanTemplate,
+        order: newOrder
+      });
+      tasks.value.push(createdTask);
+    } catch (error) {
+      console.error('Erro ao importar template para rotina:', error);
+      throw error;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const importInitialKit = async () => {
+    try {
+      isLoading.value = true;
+      let currentTemplates = templates.value;
+      
+      // Tenta buscar do Firestore se estiver vazio
+      if (currentTemplates.length === 0) {
+        try {
+          currentTemplates = await templateService.getAll();
+        } catch (e) {
+          console.warn('Erro ao buscar templates online, usando fallback local:', e);
+        }
+      }
+
+      // Se ainda estiver vazio (ou falhar a rede), usa o kit local padrão
+      const templatesToImport = currentTemplates.length > 0 ? currentTemplates : DEFAULT_LESSONS;
+
+      for (const temp of templatesToImport) {
+        const taskData = { ...temp } as any;
+        delete taskData.id;
+        delete taskData.createdAt;
+        delete taskData.updatedAt;
+
+        const newOrder = tasks.value.length + 1;
+        const createdTask = await routineService.create({
+          ...taskData,
+          order: newOrder
+        });
+        tasks.value.push(createdTask);
+      }
+    } catch (error) {
+      console.error('Erro ao importar kit de rotina inicial:', error);
+      throw error;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  // --- CRUD ADMINISTRATIVO ---
+
+  const createTemplate = async (newTemplateData: Omit<RoutineTask, 'id'>) => {
+    try {
+      isLoading.value = true;
+      const created = await templateService.create(newTemplateData);
+      templates.value.push(created);
+      templates.value.sort((a, b) => (a.order || 0) - (b.order || 0));
+    } catch (error) {
+      console.error('Erro ao criar template:', error);
+      throw error;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const updateTemplate = async (updatedTemplate: RoutineTask) => {
+    try {
+      isLoading.value = true;
+      await templateService.update(updatedTemplate);
+      const index = templates.value.findIndex(t => t.id === updatedTemplate.id);
+      if (index !== -1) {
+        templates.value[index] = updatedTemplate;
+      }
+      templates.value.sort((a, b) => (a.order || 0) - (b.order || 0));
+    } catch (error) {
+      console.error('Erro ao atualizar template:', error);
+      throw error;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const deleteTemplate = async (id: string) => {
+    try {
+      isLoading.value = true;
+      await templateService.delete(id);
+      templates.value = templates.value.filter(t => t.id !== id);
+    } catch (error) {
+      console.error('Erro ao deletar template:', error);
+      throw error;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   return {
     tasks,
+    templates,
     isLoading,
     activeFilters,
     filteredTasks,
@@ -137,5 +259,11 @@ export const useRoutineStore = defineStore('routine', () => {
     updateTasksOrder,
     removeTask,
     resetAllChecklists,
+    fetchTemplates,
+    importTaskFromTemplate,
+    importInitialKit,
+    createTemplate,
+    updateTemplate,
+    deleteTemplate,
   };
 });

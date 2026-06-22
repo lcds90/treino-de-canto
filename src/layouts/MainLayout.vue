@@ -29,6 +29,14 @@
                   </q-item-section>
                 </q-item>
                 <q-separator />
+                <!-- Admin shortcut -->
+                <q-item v-if="authStore.isAdmin" clickable to="/admin/acervo">
+                  <q-item-section avatar>
+                    <q-icon name="admin_panel_settings" color="secondary" />
+                  </q-item-section>
+                  <q-item-section>Painel Admin</q-item-section>
+                </q-item>
+                <q-separator v-if="authStore.isAdmin" />
                 <q-item clickable class="text-negative" @click="handleLogout">
                   <q-item-section avatar>
                     <q-icon name="logout" color="negative" />
@@ -99,20 +107,33 @@ const userEmailInitial = computed(() => {
   return email ? email.substring(0, 1).toUpperCase() : 'U';
 });
 
-const linksList = [
-  {
-    title: 'Início',
-    caption: 'Página inicial',
-    icon: 'home',
-    to: '/',
-  },
-  {
-    title: 'Rotina',
-    caption: 'Exercícios e vídeos',
-    icon: 'mic',
-    to: '/treino',
-  },
-];
+const linksList = computed(() => {
+  const base = [
+    {
+      title: 'Início',
+      caption: 'Página inicial',
+      icon: 'home',
+      to: '/',
+    },
+    {
+      title: 'Rotina',
+      caption: 'Exercícios e vídeos',
+      icon: 'mic',
+      to: '/treino',
+    },
+  ];
+
+  if (authStore.isAdmin) {
+    base.push({
+      title: 'Administração',
+      caption: 'Gestão de Acervo',
+      icon: 'admin_panel_settings',
+      to: '/admin/acervo',
+    });
+  }
+
+  return base;
+});
 
 const handleTabClick = (to: string) => {
   void router.push(to);

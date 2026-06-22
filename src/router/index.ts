@@ -40,10 +40,13 @@ export default defineRouter(({ store }) => {
 
     const isAuthenticated = authStore.isAuthenticated;
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+    const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin);
 
     if (requiresAuth && !isAuthenticated) {
       next({ name: 'login' });
     } else if ((to.name === 'login' || to.name === 'register') && isAuthenticated) {
+      next({ name: 'index' });
+    } else if (requiresAdmin && !authStore.isAdmin) {
       next({ name: 'index' });
     } else {
       next();
