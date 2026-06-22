@@ -2,6 +2,28 @@
 
 ## Purpose
 TBD - created by archiving change default-lessons-library. Update Purpose after archive.
+
+## Diagrams
+
+### Fluxo de Guarda de Rota Administrativa
+```mermaid
+flowchart TD
+    A[Usuário tenta acessar rota /admin/acervo] --> B{Está autenticado?}
+    B -- Não --> C[Redireciona para /login]
+    B -- Sim --> D{Possui isAdmin no Firestore /admins/uid?}
+    D -- Sim --> E[Permite acesso ao painel admin]
+    D -- Não --> F[Redireciona para Home com alerta de erro]
+```
+
+### Fluxo de Navegação e Importação do Acervo
+```mermaid
+flowchart TD
+    U[Usuário na Rotina] -->|Clica em Explorar Biblioteca| L[Abre Catálogo de Lições]
+    L -->|Escolhe uma lição| D[Visualiza Instruções e Checklist]
+    D -->|Clica em Adicionar| I[Cria cópia no Firestore /users/uid/routines]
+    I -->|Sucesso| N[Exibe Notificação e atualiza lista]
+```
+
 ## Requirements
 ### Requirement: Exibição do Acervo de Lições Padrões
 O sistema SHALL exibir um acervo (biblioteca) de lições de canto pré-definidas para seleção do usuário.
