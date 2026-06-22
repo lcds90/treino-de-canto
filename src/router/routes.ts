@@ -29,6 +29,12 @@ const routes: RouteRecordRaw[] = [
         name: 'register',
         component: () => import('pages/RegisterPage.vue'),
       },
+      {
+        path: 'metronomo',
+        name: 'metronome',
+        component: () => import('pages/MetronomePage.vue'),
+        meta: { requiresAuth: true },
+      },
     ],
   },
   // Always leave this as last one,
