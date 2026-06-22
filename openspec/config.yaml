@@ -11,8 +11,8 @@ context: |
 
 rules:
   design:
-    - OBRIGATÓRIO: O design técnico DEVE conter pelo menos um diagrama de blocos ou de fluxo usando sintaxe ```mermaid.
-    - Utilize cabeçalhos Markdown claros (## e ###) para facilitar a geração do Outline (Índice) automático no VS Code.
+    - O design técnico DEVE conter pelo menos um diagrama de blocos ou de fluxo usando sintaxe ```mermaid.
+    - Utilize cabeçalhos Markdown para facilitar a geração do Outline (Índice) automático no VS Code.
   proposal:
     - Include rollback plan
     - Identify affected teams

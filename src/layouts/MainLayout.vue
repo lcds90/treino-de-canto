@@ -112,6 +112,12 @@ const linksList = [
     icon: 'mic',
     to: '/treino',
   },
+  {
+    title: 'Metrônomo',
+    caption: 'Metrônomo animado',
+    icon: 'av_timer',
+    to: '/metronomo',
+  },
 ];
 
 const handleTabClick = (to: string) => {
