@@ -7,10 +7,12 @@ import {
   onAuthStateChanged,
   type User,
 } from 'firebase/auth';
-import { auth } from 'src/boot/firebase';
+import { auth, db } from 'src/boot/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null);
+  const isAdmin = ref(false);
   const isLoading = ref(true);
   const authReady = ref(false);
 
@@ -21,8 +23,21 @@ export const useAuthStore = defineStore('auth', () => {
   });
 
   // Start listening to auth state changes
-  onAuthStateChanged(auth, (firebaseUser) => {
+  onAuthStateChanged(auth, async (firebaseUser) => {
     user.value = firebaseUser;
+    
+    if (firebaseUser) {
+      try {
+        const adminDoc = await getDoc(doc(db, 'admins', firebaseUser.uid));
+        isAdmin.value = adminDoc.exists() && adminDoc.data()?.isAdmin === true;
+      } catch (error) {
+        console.error('Erro ao buscar perfil de administrador:', error);
+        isAdmin.value = false;
+      }
+    } else {
+      isAdmin.value = false;
+    }
+
     isLoading.value = false;
     authReady.value = true;
     if (resolveReady) {
@@ -57,6 +72,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       await signOut(auth);
       user.value = null;
+      isAdmin.value = false;
     } finally {
       isLoading.value = false;
     }
@@ -64,6 +80,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     user,
+    isAdmin,
     isLoading,
     authReady,
     isReady: isReadyPromise,

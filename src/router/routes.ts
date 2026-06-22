@@ -20,6 +20,12 @@ const routes: RouteRecordRaw[] = [
         ],
       },
       {
+        path: 'admin/acervo',
+        name: 'admin-acervo',
+        component: () => import('pages/AdminAcervoPage.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true },
+      },
+      {
         path: 'login',
         name: 'login',
         component: () => import('pages/LoginPage.vue'),
