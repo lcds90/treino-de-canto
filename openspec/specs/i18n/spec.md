@@ -4,6 +4,27 @@
 
 TBD - created by archiving change configure-i18n. Update Purpose after archive.
 
+## Diagrams
+
+### Fluxo de Inicialização do Idioma (com Firebase e LocalStorage)
+
+```mermaid
+flowchart TD
+    A[Carregamento do Aplicativo] --> B{Possui dados remotos no Firebase?}
+    B -- Sim --> C[Usar idioma recuperado do Firebase]
+    B -- Não --> D{Possui idioma salvo no localStorage?}
+    D -- Sim --> E[Usar idioma do localStorage]
+    D -- Não --> F{Idioma do navegador é suportado? pt-BR, en-US ou es}
+    F -- Sim --> G[Usar idioma do navegador]
+    F -- Não --> H[Usar pt-BR como fallback]
+    C --> I[Inicializar/atualizar vue-i18n com o idioma resolvido]
+    E --> I
+    G --> I
+    H --> I
+    I --> J[Exibir textos dinamicamente na UI e computar os textos sorteados]
+```
+
+
 ## Requirements
 
 ### Requirement: Suporte a Múltiplos Idiomas (i18n)
