@@ -97,22 +97,12 @@ onMounted(() => {
 // --- CÁLCULO DE MÉTRICAS ---
 const calculateMetrics = () => {
   let completed = 0;
-  let partial = 0;
+  const partial = 0;
   let uncompleted = 0;
 
   tasks.value.forEach((task) => {
-    const totalItems = task.checklist.length;
-    if (totalItems === 0) {
-      uncompleted++;
-      return;
-    }
-
-    const doneItems = task.checklist.filter((item) => item.done).length;
-
-    if (doneItems === totalItems) {
+    if (task.done) {
       completed++;
-    } else if (doneItems > 0) {
-      partial++;
     } else {
       uncompleted++;
     }

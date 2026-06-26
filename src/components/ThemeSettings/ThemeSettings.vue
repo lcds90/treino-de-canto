@@ -28,6 +28,30 @@
       <q-separator class="q-mx-md" />
 
       <q-card-section>
+        <div class="text-subtitle1 text-weight-bold q-mb-sm">Classificação Vocal</div>
+        <div class="row q-col-gutter-md">
+          <div class="col-12 col-md-6">
+            <q-select
+              v-model="localVocalRange"
+              :options="vocalRangeOptions"
+              label="Seu Naipe Vocal"
+              outlined
+              dense
+              emit-value
+              map-options
+              @update:model-value="onVocalRangeChange"
+            />
+          </div>
+        </div>
+        <div v-if="selectedVocalRangeInfo" class="q-mt-sm text-caption text-grey-7 flex items-center">
+          <q-icon name="music_note" size="xs" class="q-mr-xs text-secondary" />
+          <span>{{ selectedVocalRangeInfo.description }}</span>
+        </div>
+      </q-card-section>
+
+      <q-separator class="q-mx-md" />
+
+      <q-card-section>
         <div class="row items-center justify-between q-mb-md">
           <div class="text-subtitle1 text-weight-bold">Paleta de Cores</div>
           <div class="row q-gutter-sm">
@@ -98,19 +122,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useSettingsStore } from 'src/stores/settings-store';
+import { VOCAL_RANGES } from 'src/services';
 
 const settingsStore = useSettingsStore();
 
 const localDark = ref(settingsStore.isDark);
 const localLanguage = ref(settingsStore.language);
+const localVocalRange = ref(settingsStore.vocalRange);
 
 const languageOptions = [
   { label: 'Português (pt-BR)', value: 'pt-BR' },
   { label: 'English (en-US)', value: 'en-US' },
   { label: 'Español (es)', value: 'es' },
 ];
+
+const vocalRangeOptions = Object.entries(VOCAL_RANGES).map(([key, info]) => ({
+  label: info.name,
+  value: key,
+}));
 
 watch(
   () => settingsStore.isDark,
@@ -122,9 +153,22 @@ watch(
   (val) => (localLanguage.value = val),
 );
 
+watch(
+  () => settingsStore.vocalRange,
+  (val) => (localVocalRange.value = val),
+);
+
 const onLanguageChange = (val: string) => {
   settingsStore.updateLanguage(val);
 };
+
+const onVocalRangeChange = (val: string) => {
+  settingsStore.updateVocalRange(val);
+};
+
+const selectedVocalRangeInfo = computed(() => {
+  return VOCAL_RANGES[localVocalRange.value] || null;
+});
 
 const onColorChange = (name: string | number, hex: string | null) => {
   if (hex) settingsStore.updateColor(String(name), hex);

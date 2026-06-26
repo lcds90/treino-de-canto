@@ -27,7 +27,7 @@ export const useRoutineStore = defineStore('routine', () => {
     const result = tasks.value.filter((task) => {
       if (activeFilters.value.search) {
         const term = activeFilters.value.search.toLowerCase().trim();
-        const checklistTexts = task.checklist.map((c) => c.label).join(' ');
+        const checklistTexts = (task.checklist || []).map((c) => c.label).join(' ');
         const everything =
           `${task.title} ${task.instructions} ${task.mediaUrl} ${checklistTexts}`.toLowerCase();
         if (!everything.includes(term)) return false;
@@ -120,11 +120,7 @@ export const useRoutineStore = defineStore('routine', () => {
 
   const resetAllChecklists = () => {
     tasks.value.forEach((task) => {
-      if (task.checklist && task.checklist.length > 0) {
-        task.checklist.forEach((item) => {
-          item.done = false;
-        });
-      }
+      task.done = false;
     });
   };
 

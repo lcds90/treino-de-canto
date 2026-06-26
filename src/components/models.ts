@@ -4,7 +4,7 @@ export interface ChecklistItem {
   done: boolean;
 }
 
-export type PlatformType = 'youtube' | 'udemy' | 'hotmart' | 'yousician' | 'other';
+export type PlatformType = 'youtube' | 'udemy' | 'hotmart' | 'yousician' | 'other' | 'vocalize' | 'melisma';
 
 export interface RoutineTask {
   id: string;
@@ -12,10 +12,15 @@ export interface RoutineTask {
   platform: PlatformType;
   mediaUrl: string;
   instructions: string;
-  checklist: ChecklistItem[];
+  checklist?: ChecklistItem[];
+  done?: boolean;
   order?: number;
   createdAt?: string;
   updatedAt?: string;
+  bpm?: number;
+  measures?: number;
+  noteDuration?: 'half' | 'quarter' | 'eighth' | 'sixteenth' | 'mixed';
+  includeRests?: boolean;
 }
 
 export interface ChecklistItem {
