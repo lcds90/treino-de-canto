@@ -9,61 +9,85 @@
 
       <q-card-section class="q-pt-md scroll" style="max-height: 70vh">
         <q-form ref="formRef" class="q-gutter-y-md">
+          <!-- 1. Tipo de Exercício (Platform) - Escolhe Primeiro! -->
+          <q-select
+            v-model="formData.platform"
+            :options="platformOptions"
+            label="Tipo de Exercício *"
+            outlined
+            dense
+            emit-value
+            map-options
+            @update:model-value="onPlatformChange"
+          />
+
+          <!-- 2. Título do Exercício -->
           <q-input
             v-model="formData.title"
-            label="Título da Aula/Treino *"
+            label="Título do Exercício *"
             outlined
-            color="primary"
             dense
+            color="primary"
             :rules="[(val) => !!val || 'O título é obrigatório']"
           />
 
-          <div class="row q-col-gutter-sm">
-            <div class="col-10">
-              <q-input
-                v-model="formData.title"
-                label="Título da Aula/Treino *"
-                outlined
-                dense
-                color="primary"
-                :rules="[(val) => !!val || 'Obrigatorio']"
-              />
-            </div>
-            <div class="col-2">
-              <q-input
-                v-model.number="formData.order"
-                type="number"
-                label="Ordem"
-                outlined
-                dense
-                color="primary"
-              />
-            </div>
-          </div>
+          <!-- 2.5 Ordem do Exercício -->
+          <q-input
+            v-model.number="formData.order"
+            type="number"
+            label="Ordem"
+            outlined
+            dense
+            color="primary"
+          />
 
-          <div class="row q-col-gutter-sm">
+          <!-- Configurações Musicais (BPM, Duração das Notas, Silêncios) -->
+          <div v-if="isVocalExercise" class="q-gutter-y-sm q-pt-xs">
+            <q-input
+              v-model.number="formData.bpm"
+              type="number"
+              label="BPM (Tempo) *"
+              outlined
+              dense
+              color="primary"
+              :rules="[
+                (val) => !!val || 'BPM é obrigatório',
+                (val) => (val >= 40 && val <= 240) || 'BPM entre 40 e 240'
+              ]"
+            />
             <q-select
-              v-model="formData.platform"
-              :options="platformOptions"
-              label="Plataforma *"
+              v-model="formData.noteDuration"
+              :options="noteDurationOptions"
+              label="Duração das Notas *"
               outlined
               dense
               emit-value
               map-options
-              class="col-4"
             />
-            <q-input
-              v-model="formData.mediaUrl"
-              label="Link do Vídeo/Curso *"
-              outlined
-              dense
-              placeholder="https://..."
-              class="col-8"
-              :rules="[(val) => !!val || 'O link é obrigatório']"
-            />
+            <div class="q-mt-sm">
+              <q-checkbox
+                v-model="formData.includeRests"
+                label="Incluir Figuras de Silêncio (Pausas) 𝄾"
+                dense
+                color="primary"
+              />
+            </div>
           </div>
 
+          <!-- 3. Link (mediaUrl) - Ocultado para Exercícios Vocais Locais -->
           <q-input
+            v-if="!isVocalExercise"
+            v-model="formData.mediaUrl"
+            label="Link do Vídeo/Curso *"
+            outlined
+            dense
+            placeholder="https://..."
+            :rules="[(val) => !!val || 'O link é obrigatório']"
+          />
+
+          <!-- 4. Instruções - Ocultado se for Vocalize/Melisma -->
+          <q-input
+            v-if="!isVocalExercise"
             v-model="formData.instructions"
             type="textarea"
             label="Instruções"
@@ -71,60 +95,6 @@
             dense
             autogrow
           />
-
-          <div class="column q-gutter-y-sm q-mt-sm">
-            <div class="text-subtitle2 row items-center">
-              <q-icon name="checklist" class="q-mr-xs" />
-              Itens da Checklist
-            </div>
-
-            <div class="row q-gutter-x-sm">
-              <q-input
-                v-model="newItemLabel"
-                placeholder="Ex: Escala em Dó Maior"
-                outlined
-                dense
-                class="col"
-                @keyup.enter="addChecklistItem"
-              />
-              <q-btn
-                color="secondary"
-                icon="add"
-                @click="addChecklistItem"
-                :disable="!newItemLabel.trim()"
-              />
-            </div>
-
-            <q-list dense bordered separator class="rounded-borders">
-              <q-item
-                v-for="(item, index) in formData.checklist"
-                :key="index"
-                class="q-py-sm checklist-item-row"
-              >
-                <q-item-section avatar>
-                  <q-icon name="check_circle" color="grey-4" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ item.label }}</q-item-label>
-                </q-item-section>
-                <q-item-section side>
-                  <q-btn
-                    flat
-                    round
-                    dense
-                    icon="delete"
-                    color="negative"
-                    size="sm"
-                    @click="removeChecklistItem(index)"
-                  />
-                </q-item-section>
-              </q-item>
-
-              <q-item v-if="formData.checklist.length === 0" class="text-italic">
-                Nenhum item adicionado...
-              </q-item>
-            </q-list>
-          </div>
         </q-form>
       </q-card-section>
 
@@ -191,15 +161,17 @@ const dialogLabel = computed(() => ({
 }));
 
 const initialForm = (): Omit<RoutineTask, 'id' | 'createdAt' | 'updatedAt'> => ({
-  title: '',
-  platform: 'youtube',
+  title: 'Exercício de Vocalize',
+  platform: 'vocalize',
   mediaUrl: '',
-  instructions: '',
-  checklist: [],
+  instructions: 'Siga o guia de notas subindo e descendo o tom para aquecer sua voz.',
+  bpm: 120,
+  noteDuration: 'quarter',
+  includeRests: false,
 });
 
 const formData = reactive(initialForm());
-const newItemLabel = ref('');
+const isVocalExercise = computed(() => formData.platform === 'vocalize' || formData.platform === 'melisma');
 
 // --- WATCHER PARA CARREGAR DADOS NA EDIÇÃO ---
 watch(
@@ -258,6 +230,8 @@ const formRef = ref<any | null>(null);
 const isSaving = ref(false);
 
 const platformOptions = [
+  { label: 'Vocalize (Nativo) 🎵', value: 'vocalize' },
+  { label: 'Melisma (Nativo) 🌊', value: 'melisma' },
   { label: 'YouTube 🔴', value: 'youtube' },
   { label: 'Hotmart 🔥', value: 'hotmart' },
   { label: 'Udemy 🎓', value: 'udemy' },
@@ -265,35 +239,43 @@ const platformOptions = [
   { label: 'Outro 🔗', value: 'other' },
 ];
 
-const addChecklistItem = () => {
-  if (!newItemLabel.value.trim()) return;
+const noteDurationOptions = [
+  { label: 'Mínima (2 tempos) 𝅗𝅥', value: 'half' },
+  { label: 'Semínima (1 tempo) 𝅘𝅥', value: 'quarter' },
+  { label: 'Colcheia (0.5 tempo) 𝅘𝅥𝅮', value: 'eighth' },
+  { label: 'Semicolcheia (0.25 tempo) 𝅘𝅥𝅯', value: 'sixteenth' },
+  { label: 'Alternada (Mista) 𝅘𝅥𝅘𝅥𝅮', value: 'mixed' },
+];
 
-  const newItem: ChecklistItem = {
-    id: Date.now().toString(),
-    label: newItemLabel.value.trim(),
-    done: false,
-  };
-
-  formData.checklist.push(newItem);
-  newItemLabel.value = '';
-
-  // Animaçãozinha marota de entrada do novo item
-  setTimeout(() => {
-    const items = document.querySelectorAll('.checklist-item-row');
-    const lastItem = items[items.length - 1];
-    if (lastItem) {
-      gsap.from(lastItem, { x: -20, opacity: 0, duration: 0.3, ease: 'back.out' });
+const onPlatformChange = (val: string) => {
+  if (val === 'vocalize') {
+    formData.title = 'Exercício de Vocalize';
+    formData.instructions = 'Siga o guia de notas subindo e descendo o tom para aquecer sua voz.';
+    formData.bpm = 120;
+    formData.noteDuration = 'quarter';
+    formData.includeRests = false;
+  } else if (val === 'melisma') {
+    formData.title = 'Exercício de Melisma';
+    formData.instructions = 'Siga o padrão melódico de melisma para treinar agilidade e precisão vocal.';
+    formData.bpm = 100;
+    formData.noteDuration = 'quarter';
+    formData.includeRests = false;
+  } else {
+    if (formData.title === 'Exercício de Vocalize' || formData.title === 'Exercício de Melisma') {
+      formData.title = '';
     }
-  }, 0);
-};
-
-const removeChecklistItem = (index: number) => {
-  formData.checklist.splice(index, 1);
+    if (formData.instructions === 'Siga o guia de notas subindo e descendo o tom para aquecer sua voz.' ||
+        formData.instructions === 'Siga o padrão melódico de melisma para treinar agilidade e precisão vocal.') {
+      formData.instructions = '';
+    }
+    delete formData.bpm;
+    delete formData.noteDuration;
+    delete formData.includeRests;
+  }
 };
 
 const resetForm = () => {
   Object.assign(formData, initialForm());
-  newItemLabel.value = '';
 };
 
 const handleCancel = () => {

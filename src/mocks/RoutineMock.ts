@@ -10,10 +10,7 @@ export const SINGING_ROUTINE_MOCKS: Omit<RoutineTask, 'id'>[] = [
     order: 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    checklist: [
-      { id: 'mock_1', label: 'Lip Trill - 3 minutos', done: false },
-      { id: 'mock_2', label: 'Sirene suave (Ooh)', done: false },
-    ],
+    done: false,
   },
   {
     title: 'Agilidade com Escala Pentatônica',
@@ -23,9 +20,6 @@ export const SINGING_ROUTINE_MOCKS: Omit<RoutineTask, 'id'>[] = [
     order: 2,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    checklist: [
-      { id: 'mock_3', label: 'Padrão 1 (Lento)', done: false },
-      { id: 'mock_4', label: 'Padrão 1 (Rápido)', done: false },
-    ],
+    done: false,
   },
 ];

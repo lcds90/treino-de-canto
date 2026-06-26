@@ -1,5 +1,18 @@
 <template>
   <div>
+    <!-- Botão proeminente no topo para criar exercício rápido -->
+    <div v-if="!readOnly" class="row justify-center q-mb-lg">
+      <q-btn
+        color="secondary"
+        icon="add"
+        label="Adicionar Exercício"
+        rounded
+        unelevated
+        @click="openCreateModal"
+        class="shadow-3 q-px-lg text-weight-bold"
+      />
+    </div>
+
     <draggable
       v-model="localTasks"
       item-key="id"

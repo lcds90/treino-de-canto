@@ -6,6 +6,8 @@ export default {
     routineCaption: 'Exercícios e vídeos',
     metronome: 'Metrônomo',
     metronomeCaption: 'Metrônomo animado',
+    tuner: 'Afinador / Teclado',
+    theory: 'Teoria Musical',
   },
   auth: {
     login: 'Entrar',

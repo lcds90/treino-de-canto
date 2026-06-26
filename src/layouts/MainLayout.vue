@@ -124,6 +124,22 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <!-- Teclado de Referência Flutuante (Disponível apenas para usuários logados na rota /treino) -->
+    <div v-if="authStore.isAuthenticated && route.path.startsWith('/treino')" class="fixed-bottom-right" style="z-index: 2000; bottom: 80px; right: 24px;">
+      <q-btn
+        round
+        color="secondary"
+        icon="piano"
+        size="md"
+        class="shadow-6"
+      >
+        <q-popup-proxy transition-show="scale" transition-hide="scale">
+          <ReferenceKeyboard />
+        </q-popup-proxy>
+        <q-tooltip anchor="center left" self="center right">Teclado de Referência</q-tooltip>
+      </q-btn>
+    </div>
   </q-layout>
 </template>
 
@@ -132,6 +148,7 @@ import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth-store';
 import { useSettingsStore } from 'src/stores/settings-store';
+import ReferenceKeyboard from 'src/components/ReferenceKeyboard.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -162,6 +179,16 @@ const linksList = [
     titleKey: 'menu.metronome',
     icon: 'av_timer',
     to: '/metronomo',
+  },
+  {
+    titleKey: 'menu.tuner',
+    icon: 'piano',
+    to: '/afinador',
+  },
+  {
+    titleKey: 'menu.theory',
+    icon: 'menu_book',
+    to: '/teoria',
   },
 ];
 

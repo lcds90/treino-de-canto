@@ -35,6 +35,18 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/MetronomePage.vue'),
         meta: { requiresAuth: true },
       },
+      {
+        path: 'afinador',
+        name: 'tuner',
+        component: () => import('pages/AfinadorPage.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'teoria',
+        name: 'theory',
+        component: () => import('pages/TeoriaPage.vue'),
+        meta: { requiresAuth: true },
+      },
     ],
   },
   // Always leave this as last one,

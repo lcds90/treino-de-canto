@@ -123,6 +123,8 @@ const sortOptions = [
 const platformOptions = [
   { label: 'Todas', value: '' },
   { label: 'YouTube 🔴', value: 'youtube' },
+  { label: 'Vocalize 🎵', value: 'vocalize' },
+  { label: 'Melisma 🌊', value: 'melisma' },
   { label: 'Hotmart 🔥', value: 'hotmart' },
   { label: 'Udemy 🎓', value: 'udemy' },
   { label: 'Yousician 🎹', value: 'yousician' },

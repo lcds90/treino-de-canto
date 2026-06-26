@@ -24,6 +24,7 @@ export const useSettingsStore = defineStore('settings', () => {
   // Inicialização robusta de idioma que atende também usuários anônimos na tela de login
   const language = ref(localStorage.getItem('app-locale') ?? 'pt-BR');
   const themeColors = ref<Record<string, string>>({ ...DEFAULT_COLORS });
+  const vocalRange = ref('tenor');
   const isLoading = ref(false);
 
   // Índices fixados por sessão para o sorteio reativo de textos traduzidos do i18n
@@ -79,6 +80,7 @@ export const useSettingsStore = defineStore('settings', () => {
     isDark.value = data.isDark ?? false;
     language.value = data.language ?? localStorage.getItem('app-locale') ?? 'pt-BR';
     themeColors.value = { ...DEFAULT_COLORS, ...data.themeColors };
+    vocalRange.value = data.vocalRange ?? 'tenor';
   };
 
   // --- ACTIONS ---
@@ -117,6 +119,7 @@ export const useSettingsStore = defineStore('settings', () => {
       isDark: isDark.value,
       language: language.value,
       themeColors: themeColors.value,
+      vocalRange: vocalRange.value,
     };
 
     // 1. App fica rápido: Salva local e aplica CSS/Idioma na hora
@@ -150,6 +153,11 @@ export const useSettingsStore = defineStore('settings', () => {
     saveToStorage();
   };
 
+  const updateVocalRange = (range: string) => {
+    vocalRange.value = range;
+    saveToStorage();
+  };
+
   const updateColor = (colorName: string, hexCode: string) => {
     themeColors.value[colorName] = hexCode;
     saveToStorage();
@@ -171,6 +179,7 @@ export const useSettingsStore = defineStore('settings', () => {
     isDark,
     language,
     themeColors,
+    vocalRange,
     isLoading,
     appDescription,
     workoutTitle,
@@ -180,5 +189,6 @@ export const useSettingsStore = defineStore('settings', () => {
     updateColor,
     resetColor,
     resetAllColors,
+    updateVocalRange,
   };
 });

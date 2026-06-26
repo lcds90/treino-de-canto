@@ -14,3 +14,6 @@ export const appLogger: ILogger = new ConsoleLogger();
 export const routineService: IRoutineService = new FirebaseRoutineService(appLogger);
 export const workoutService: IWorkoutService = new FirebaseWorkoutService(appLogger);
 export const settingsService: ISettingsService = new FirebaseSettingsService(appLogger);
+
+export * from './audio-synthesizer';
+export * from './vocal-exercise-generator';
