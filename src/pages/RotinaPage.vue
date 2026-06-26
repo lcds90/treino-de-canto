@@ -21,26 +21,21 @@
         <p :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-7'" class="text-subtitle1">
           Visualizando o registro de um treino finalizado.
         </p>
-        <WorkoutSummary :session="workoutStore.getSessionById"/>
+        <WorkoutSummary :session="workoutStore.getSessionById" />
       </template>
       <template v-else>
         <h1 class="text-h4 text-weight-bold text-primary q-mb-sm">
           {{ workoutTitle }}
         </h1>
         <p :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-7'" class="text-subtitle1">
-          {{ workoutSubtitle }}
+          {{ $t('workout.subtitle') }}
         </p>
       </template>
     </div>
 
-    <q-banner
-      inline-actions
-      rounded
-      class="banner-width"
-      v-if="shouldShowHistory"
-    >
-      <p class="text-body2 q-mb-none">{{ bannerTitle }}</p>
-      <p class="text-caption q-mb-none">{{ bannerSubtitle }}</p>
+    <q-banner inline-actions rounded class="banner-width" v-if="shouldShowHistory">
+      <p class="text-body2 q-mb-none">{{ $t('workout.bannerTitle') }}</p>
+      <p class="text-caption q-mb-none">{{ $t('workout.bannerSubtitle') }}</p>
       <template v-slot:action>
         <q-btn flat label="Ver treinos" @click="isOpen = true" />
       </template>
@@ -90,7 +85,7 @@ const settingsStore = useSettingsStore();
 const $q = useQuasar();
 
 const { activeFilters, filteredTasks, isLoading } = storeToRefs(routineStore);
-const { workoutTitle, workoutSubtitle, bannerTitle, bannerSubtitle } = storeToRefs(settingsStore);
+const { workoutTitle } = storeToRefs(settingsStore);
 const { fetchTasks } = routineStore;
 const { saveWorkoutSessionAction } = workoutStore;
 
@@ -101,7 +96,9 @@ const snapshotTasks = ref<RoutineTask[]>([]); // Tarefas congeladas do treino
 const workoutId = computed(() => route.params.id as string | undefined);
 const isReadOnly = computed(() => !!workoutId.value);
 const isAllowInjectMock = ref(process.env.DEV && !isReadOnly.value);
-const shouldShowHistory = computed(() => !isReadOnly.value && workoutStore.hasTrainedToday && !workoutStore.isWorkoutActive)
+const shouldShowHistory = computed(
+  () => !isReadOnly.value && workoutStore.hasTrainedToday && !workoutStore.isWorkoutActive,
+);
 // Determina qual lista de tarefas mostrar na tela
 const currentTasks = computed(() => {
   return isReadOnly.value ? snapshotTasks.value : filteredTasks.value;

@@ -1,11 +1,7 @@
 <template>
-  <q-card
-    class="shadow-4 q-mb-xl sticky-filters"
-    style="border-radius: 16px; overflow: hidden;"
-  >
+  <q-card class="shadow-4 q-mb-xl sticky-filters" style="border-radius: 16px; overflow: hidden">
     <q-card-section class="q-pa-sm">
       <div class="row q-col-gutter-sm items-center q-px-sm">
-
         <div class="col">
           <q-input
             v-model="filters.search"
@@ -33,14 +29,12 @@
             <q-tooltip>Filtros Avançados</q-tooltip>
           </q-btn>
         </div>
-
       </div>
     </q-card-section>
 
     <div ref="advancedFiltersRef" class="advanced-filters-wrapper">
       <q-separator />
       <q-card-section class="row q-col-gutter-md q-pt-md">
-
         <div class="col-12 col-sm-6 col-md-3">
           <q-select
             v-model="filters.sortBy"
@@ -95,7 +89,6 @@
             </template>
           </q-input>
         </div>
-
       </q-card-section>
     </div>
   </q-card>
@@ -106,14 +99,14 @@ import { ref, watch, onMounted, computed } from 'vue';
 import gsap from 'gsap';
 
 const props = defineProps({
-  modelValue: { type: Object, required: true }
+  modelValue: { type: Object, required: true },
 });
 
 const emit = defineEmits(['update:modelValue']);
 
 // Garante que o sortBy tenha um valor padrão ao iniciar
 const filters = ref({
-  ...props.modelValue
+  ...props.modelValue,
 });
 
 watch(filters, (newVal) => emit('update:modelValue', newVal), { deep: true });
@@ -124,7 +117,7 @@ const sortOptions = [
   { label: 'Mais Recentes', value: 'newest' },
   { label: 'Mais Antigos', value: 'oldest' },
   { label: 'Alfabética (A-Z)', value: 'alphabetical' },
-  { label: 'Alfabética (Z-A)', value: 'reverse-alphabetical' }
+  { label: 'Alfabética (Z-A)', value: 'reverse-alphabetical' },
 ];
 
 const platformOptions = [
@@ -133,7 +126,7 @@ const platformOptions = [
   { label: 'Hotmart 🔥', value: 'hotmart' },
   { label: 'Udemy 🎓', value: 'udemy' },
   { label: 'Yousician 🎹', value: 'yousician' },
-  { label: 'Outro 🔗', value: 'other' }
+  { label: 'Outro 🔗', value: 'other' },
 ];
 
 // --- LÓGICA DE UI E ANIMAÇÃO ---
@@ -166,14 +159,14 @@ const toggleFilters = () => {
       height: 'auto',
       opacity: 1,
       duration: 0.4,
-      ease: 'power2.out'
+      ease: 'power2.out',
     });
   } else {
     gsap.to(advancedFiltersRef.value, {
       height: 0,
       opacity: 0,
       duration: 0.3,
-      ease: 'power2.in'
+      ease: 'power2.in',
     });
   }
 };

@@ -24,7 +24,7 @@ watch(
       settingsStore.themeColors = { ...DEFAULT_COLORS };
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 import { DEFAULT_COLORS } from './stores/settings-store';

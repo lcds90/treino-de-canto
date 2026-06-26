@@ -1,8 +1,10 @@
 // src/stores/settings-store.ts
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { setCssVar, Dark } from 'quasar';
-import { settingsService } from 'src/services'; // <-- Importa o serviço
+import { settingsService } from 'src/services';
+import { setLocale, getI18n } from 'src/boot/i18n';
+import { useAuthStore } from './auth-store';
 
 export const DEFAULT_COLORS: Record<string, string> = {
   primary: '#1976D2',
@@ -19,39 +21,63 @@ export const DEFAULT_COLORS: Record<string, string> = {
 export const useSettingsStore = defineStore('settings', () => {
   // --- STATE ---
   const isDark = ref(false);
-  const appTitle = ref('Rotina de Canto 🎤');
-  const appDescription = ref('Seu painel de evolução vocal.');
-  const workoutTitle = ref('🎧 Hora de Soltar a Voz! 🎶');
-  const workoutSubtitle = ref(
-    'Siga as instruções de cada vídeo e marque os exercícios concluídos.',
-  );
-  const bannerTitle = ref('Hoje um treino já foi registrado! 💪');
-  const bannerSubtitle = ref('Mas sinta-se livre para treinar mais! 🎶');
+  // Inicialização robusta de idioma que atende também usuários anônimos na tela de login
+  const language = ref(localStorage.getItem('app-locale') ?? 'pt-BR');
   const themeColors = ref<Record<string, string>>({ ...DEFAULT_COLORS });
-
   const isLoading = ref(false);
+
+  // Índices fixados por sessão para o sorteio reativo de textos traduzidos do i18n
+  const randomDescIndex = ref(Math.floor(Math.random() * 100));
+  const randomTitleIndex = ref(Math.floor(Math.random() * 100));
 
   // Variável para controlar o timer do Debounce
   let firebaseSaveTimeout: ReturnType<typeof setTimeout>;
 
+  // --- GETTERS DINÂMICOS SORTEADOS DO I18N ---
+  const appDescription = computed(() => {
+    const i18n = getI18n();
+    if (i18n) {
+      const list = i18n.global.tm('appDescription') as string[];
+      if (Array.isArray(list) && list.length > 0) {
+        return list[randomDescIndex.value % list.length];
+      }
+    }
+    return 'Seu painel de evolução vocal.'; // Fallback padrão
+  });
+
+  const workoutTitle = computed(() => {
+    const i18n = getI18n();
+    if (i18n) {
+      const list = i18n.global.tm('workoutTitle') as string[];
+      if (Array.isArray(list) && list.length > 0) {
+        return list[randomTitleIndex.value % list.length];
+      }
+    }
+    return '🎧 Hora de Soltar a Voz! 🎶'; // Fallback padrão
+  });
+
   // --- FUNÇÕES INTERNAS ---
   const applySettings = () => {
     Dark.set(isDark.value);
-    document.title = appTitle.value;
+
+    // Atualiza o título do documento de forma traduzida estática
+    const i18n = getI18n();
+    if (i18n) {
+      document.title = i18n.global.t('title') ?? 'Rotina de Canto';
+    } else {
+      document.title = 'Rotina de Canto';
+    }
+
     for (const [name, hex] of Object.entries(themeColors.value)) {
       setCssVar(name, hex);
     }
+    // Sincroniza o idioma do vue-i18n através do helper reativo funcional
+    setLocale(language.value);
   };
 
   const loadDataIntoState = (data: any) => {
     isDark.value = data.isDark ?? false;
-    appTitle.value = data.appTitle ?? 'Rotina de Canto 🎤';
-    appDescription.value = data.appDescription ?? 'Seu painel de evolução vocal.';
-    workoutTitle.value = data.workoutTitle ?? '🎧 Hora de Soltar a Voz! 🎶';
-    workoutSubtitle.value =
-      data.workoutSubtitle ?? 'Siga as instruções de cada vídeo e marque os exercícios concluídos.';
-    bannerTitle.value = data.bannerTitle ?? 'Hoje um treino já foi registrado! 💪';
-    bannerSubtitle.value = data.bannerSubtitle ?? 'Mas sinta-se livre para treinar mais! 🎶';
+    language.value = data.language ?? localStorage.getItem('app-locale') ?? 'pt-BR';
     themeColors.value = { ...DEFAULT_COLORS, ...data.themeColors };
   };
 
@@ -89,30 +115,29 @@ export const useSettingsStore = defineStore('settings', () => {
   const saveToStorage = () => {
     const dataToSave = {
       isDark: isDark.value,
-      appTitle: appTitle.value,
-      appDescription: appDescription.value,
-      workoutTitle: workoutTitle.value,
-      workoutSubtitle: workoutSubtitle.value,
-      bannerTitle: bannerTitle.value,
-      bannerSubtitle: bannerSubtitle.value,
+      language: language.value,
       themeColors: themeColors.value,
     };
 
-    // 1. App fica rápido: Salva local e aplica CSS na hora
+    // 1. App fica rápido: Salva local e aplica CSS/Idioma na hora
     localStorage.setItem('app_settings', JSON.stringify(dataToSave));
+    localStorage.setItem('app-locale', language.value);
     applySettings();
 
-    // 2. Firebase fica seguro: Cancela o timer anterior se existir e cria um novo
-    clearTimeout(firebaseSaveTimeout);
+    // 2. Firebase fica seguro: Só salva na nuvem com debounce se o usuário estiver logado
+    const authStore = useAuthStore();
+    if (authStore.isAuthenticated) {
+      clearTimeout(firebaseSaveTimeout);
 
-    firebaseSaveTimeout = setTimeout(async () => {
-      try {
-        await settingsService.saveSettings(dataToSave);
-        console.log('⚙️ Configurações sincronizadas com a nuvem!');
-      } catch (error) {
-        console.error('Erro ao salvar configurações na nuvem:', error);
-      }
-    }, 1000); // Aguarda 1 segundo de "silêncio" antes de enviar para o banco
+      firebaseSaveTimeout = setTimeout(async () => {
+        try {
+          await settingsService.saveSettings(dataToSave);
+          console.log('⚙️ Configurações sincronizadas com a nuvem!');
+        } catch (error) {
+          console.error('Erro ao salvar configurações na nuvem:', error);
+        }
+      }, 1000);
+    }
   };
 
   const toggleDarkMode = (val: boolean) => {
@@ -120,17 +145,8 @@ export const useSettingsStore = defineStore('settings', () => {
     saveToStorage();
   };
 
-  const updateAppMeta = (title: string, desc: string) => {
-    appTitle.value = title;
-    appDescription.value = desc;
-    saveToStorage();
-  };
-
-  const updateWorkoutMeta = (wTitle: string, wSub: string, bTitle: string, bSub: string) => {
-    workoutTitle.value = wTitle;
-    workoutSubtitle.value = wSub;
-    bannerTitle.value = bTitle;
-    bannerSubtitle.value = bSub;
+  const updateLanguage = (lang: string) => {
+    language.value = lang;
     saveToStorage();
   };
 
@@ -153,18 +169,14 @@ export const useSettingsStore = defineStore('settings', () => {
 
   return {
     isDark,
-    appTitle,
-    appDescription,
-    workoutTitle,
-    workoutSubtitle,
-    bannerTitle,
-    bannerSubtitle,
+    language,
     themeColors,
     isLoading,
+    appDescription,
+    workoutTitle,
     initSettings,
     toggleDarkMode,
-    updateAppMeta,
-    updateWorkoutMeta,
+    updateLanguage,
     updateColor,
     resetColor,
     resetAllColors,

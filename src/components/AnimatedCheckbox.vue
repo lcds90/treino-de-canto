@@ -4,26 +4,46 @@
       <svg
         ref="mainSvgRef"
         class="animated-checkbox-svg"
-        width="24" height="24"
+        width="24"
+        height="24"
         viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"
       >
         <rect
           ref="boxRef"
           class="checkbox-box"
-          x="2" y="2" width="20" height="20"
+          x="2"
+          y="2"
+          width="20"
+          height="20"
           :class="{ 'checkbox-box-checked': isCheckedInternal }"
         />
-        <path
-          ref="checkRef"
-          class="checkmark-path"
-          d="M 5 12 L 10 17 L 19 8"
-        />
+        <path ref="checkRef" class="checkmark-path" d="M 5 12 L 10 17 L 19 8" />
 
         <g ref="particlesGroupRef" class="checkbox-particles">
-          <circle v-for="i in 10" :key="`c${i}`" :ref="el => setParticleRef(el, i-1)" class="checkbox-particle circle-particle" r="1.5" cx="12" cy="12" />
-          <path :ref="el => setParticleRef(el, 10)" class="checkbox-particle star-particle" d="M 12 10 L 13 12 L 15 13 L 13 14 L 12 16 L 11 14 L 9 13 L 11 12 Z" />
-          <circle v-for="i in 4" :key="`c2${i}`" :ref="el => setParticleRef(el, 10+i)" class="checkbox-particle circle-particle" r="1" cx="12" cy="12" />
+          <circle
+            v-for="i in 10"
+            :key="`c${i}`"
+            :ref="(el) => setParticleRef(el, i - 1)"
+            class="checkbox-particle circle-particle"
+            r="1.5"
+            cx="12"
+            cy="12"
+          />
+          <path
+            :ref="(el) => setParticleRef(el, 10)"
+            class="checkbox-particle star-particle"
+            d="M 12 10 L 13 12 L 15 13 L 13 14 L 12 16 L 11 14 L 9 13 L 11 12 Z"
+          />
+          <circle
+            v-for="i in 4"
+            :key="`c2${i}`"
+            :ref="(el) => setParticleRef(el, 10 + i)"
+            class="checkbox-particle circle-particle"
+            r="1"
+            cx="12"
+            cy="12"
+          />
         </g>
       </svg>
     </div>
@@ -59,8 +79,12 @@ const particlesRefs = ref<Array<SVGElement>>([]);
 const PATH_LENGTH = 22;
 
 const isCheckedInternal = computed({
-  get() { return props.modelValue; },
-  set(value: boolean) { emits('update:modelValue', value); }
+  get() {
+    return props.modelValue;
+  },
+  set(value: boolean) {
+    emits('update:modelValue', value);
+  },
 });
 
 const setParticleRef = (el: any, index: number) => {
@@ -82,17 +106,32 @@ const toggleChecked = async () => {
 };
 
 const playCheckAnimation = () => {
-  if (!mainSvgRef.value || !boxRef.value || !checkRef.value || !particlesGroupRef.value || particlesRefs.value.length === 0) return;
+  if (
+    !mainSvgRef.value ||
+    !boxRef.value ||
+    !checkRef.value ||
+    !particlesGroupRef.value ||
+    particlesRefs.value.length === 0
+  )
+    return;
 
   const tl = gsap.timeline();
 
   // Prepara o checkmark
-  gsap.set(checkRef.value, { strokeDasharray: PATH_LENGTH, strokeDashoffset: PATH_LENGTH, opacity: 1 });
+  gsap.set(checkRef.value, {
+    strokeDasharray: PATH_LENGTH,
+    strokeDashoffset: PATH_LENGTH,
+    opacity: 1,
+  });
 
   // O PULO & DESENHO
-  tl.to(mainSvgRef.value, { rotate: 360, scale: 0.9, duration: 0.2, ease: "power1.out" })
-    .to(boxRef.value, { scale: 0.9, transformOrigin: "center", duration: 0.1, ease: "power1.out" }, "-=0.2")
-    .to(checkRef.value, { strokeDashoffset: 0, duration: 0.3, ease: "power1.out" }, "-=0.1");
+  tl.to(mainSvgRef.value, { rotate: 360, scale: 0.9, duration: 0.2, ease: 'power1.out' })
+    .to(
+      boxRef.value,
+      { scale: 0.9, transformOrigin: 'center', duration: 0.1, ease: 'power1.out' },
+      '-=0.2',
+    )
+    .to(checkRef.value, { strokeDashoffset: 0, duration: 0.3, ease: 'power1.out' }, '-=0.1');
 
   // EXPLOSÃO DE FOGOS (Corrigido!)
   const apexTl = gsap.timeline();
@@ -104,7 +143,8 @@ const playCheckAnimation = () => {
     const targetY = Math.sin(angle) * distance;
 
     // Usamos fromTo para garantir que eles fiquem visíveis (opacity: 1) no momento da explosão
-    apexTl.fromTo(particle,
+    apexTl.fromTo(
+      particle,
       { x: 0, y: 0, scale: 0.5, opacity: 1 }, // INÍCIO: Visível e no centro
       {
         x: targetX,
@@ -112,33 +152,33 @@ const playCheckAnimation = () => {
         scale: gsap.utils.random(1.5, 2.5),
         opacity: 0, // FIM: Desaparece na ponta
         duration: velocity,
-        ease: "power2.out",
+        ease: 'power2.out',
       },
-      index * 0.01
+      index * 0.01,
     );
   });
 
-  tl.add(apexTl, "-=0.1");
+  tl.add(apexTl, '-=0.1');
 
   // CAINDO DE VOLTA
-  tl.to(mainSvgRef.value, { scale: 1, duration: 1, ease: "bounce" }, "-=0.3")
-    .to(boxRef.value, { scale: 1, duration: 0.2, ease: "power1.in" }, "-=0.2")
+  tl.to(mainSvgRef.value, { scale: 1, duration: 1, ease: 'bounce' }, '-=0.3')
+    .to(boxRef.value, { scale: 1, duration: 0.2, ease: 'power1.in' }, '-=0.2')
     .set(mainSvgRef.value, { rotate: 0 }); // Reseta a rotação para evitar acúmulo de transformações
 };
 
 const resetCheckAnimation = () => {
-    if (!checkRef.value || particlesRefs.value.length === 0) return;
+  if (!checkRef.value || particlesRefs.value.length === 0) return;
 
-    gsap.to(checkRef.value, { strokeDashoffset: PATH_LENGTH, duration: 0.15 });
+  gsap.to(checkRef.value, { strokeDashoffset: PATH_LENGTH, duration: 0.15 });
 
-    particlesRefs.value.forEach(p => {
-        gsap.killTweensOf(p);
-        gsap.set(p, { x: 0, y: 0, scale: 1, opacity: 0 });
-    });
+  particlesRefs.value.forEach((p) => {
+    gsap.killTweensOf(p);
+    gsap.set(p, { x: 0, y: 0, scale: 1, opacity: 0 });
+  });
 };
 onMounted(() => {
   // 1. Esconde as partículas de fogos
-  particlesRefs.value.forEach(p => gsap.set(p, { x: 0, y: 0, scale: 1, opacity: 0 }));
+  particlesRefs.value.forEach((p) => gsap.set(p, { x: 0, y: 0, scale: 1, opacity: 0 }));
 
   // 2. Verifica se JÁ ESTÁ marcado ao carregar a página
   if (checkRef.value) {
@@ -147,21 +187,32 @@ onMounted(() => {
       gsap.set(checkRef.value, { strokeDasharray: PATH_LENGTH, strokeDashoffset: 0, opacity: 1 });
     } else {
       // Se não, deixa escondido
-      gsap.set(checkRef.value, { strokeDasharray: PATH_LENGTH, strokeDashoffset: PATH_LENGTH, opacity: 0 });
+      gsap.set(checkRef.value, {
+        strokeDasharray: PATH_LENGTH,
+        strokeDashoffset: PATH_LENGTH,
+        opacity: 0,
+      });
     }
   }
 });
 
 // Removemos o { immediate: true } para não dar conflito antes do DOM existir.
 // Esse watch agora só serve se o valor for alterado por FORA do componente.
-watch(() => props.modelValue, (newValue) => {
-  if (!checkRef.value) return;
-  if (newValue) {
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (!checkRef.value) return;
+    if (newValue) {
       gsap.set(checkRef.value, { strokeDasharray: PATH_LENGTH, strokeDashoffset: 0, opacity: 1 });
-  } else {
-      gsap.set(checkRef.value, { strokeDasharray: PATH_LENGTH, strokeDashoffset: PATH_LENGTH, opacity: 0 });
-  }
-});
+    } else {
+      gsap.set(checkRef.value, {
+        strokeDasharray: PATH_LENGTH,
+        strokeDashoffset: PATH_LENGTH,
+        opacity: 0,
+      });
+    }
+  },
+);
 </script>
 
 <style scoped>
@@ -194,7 +245,9 @@ watch(() => props.modelValue, (newValue) => {
   stroke: var(--q-primary, #19d257);
   stroke-width: 2;
   rx: 4;
-  transition: fill 0.2s ease, stroke 0.2s ease;
+  transition:
+    fill 0.2s ease,
+    stroke 0.2s ease;
   transform-origin: center;
 }
 
@@ -221,12 +274,12 @@ watch(() => props.modelValue, (newValue) => {
 }
 
 .checkbox-particle {
-  fill: #FFB300; /* Cor fixa dourada/amarela para os fogos se destacarem bem! */
+  fill: #ffb300; /* Cor fixa dourada/amarela para os fogos se destacarem bem! */
   opacity: 0;
 }
 
 .star-particle {
-  stroke: #FF8F00;
+  stroke: #ff8f00;
   stroke-width: 0.5;
 }
 

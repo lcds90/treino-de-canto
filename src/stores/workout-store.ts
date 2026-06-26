@@ -81,7 +81,9 @@ export const useWorkoutStore = defineStore('workout', () => {
   // --- GETTER DO TIMER ---
   const formattedTime = computed(() => {
     const h = Math.floor(elapsedSeconds.value / 3600);
-    const m = Math.floor((elapsedSeconds.value % 3600) / 60).toString().padStart(2, '0');
+    const m = Math.floor((elapsedSeconds.value % 3600) / 60)
+      .toString()
+      .padStart(2, '0');
     const s = (elapsedSeconds.value % 60).toString().padStart(2, '0');
 
     if (h > 0) return `${h.toString().padStart(2, '0')}:${m}:${s}`;

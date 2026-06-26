@@ -23,6 +23,6 @@ export const useMetricsStore = defineStore('metrics', () => {
   return {
     bestDay,
     currentStreak,
-    weeklyChartData
+    weeklyChartData,
   };
 });

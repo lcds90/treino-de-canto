@@ -180,7 +180,8 @@ const beforeChecklistToggle = (newValue: boolean): Promise<boolean> | boolean =>
   return new Promise<boolean>((resolve) => {
     $q.dialog({
       title: 'Iniciar Treino? 🚀',
-      message: 'Você ainda não iniciou o treino de hoje. Deseja iniciar o treino agora para começar a marcar os exercícios?',
+      message:
+        'Você ainda não iniciou o treino de hoje. Deseja iniciar o treino agora para começar a marcar os exercícios?',
       cancel: { label: 'Cancelar', color: 'grey-7', flat: true },
       ok: { label: 'Iniciar Treino', color: 'primary', unelevated: true },
       persistent: true,

@@ -13,9 +13,11 @@ Currently, the application allows managing vocal routines and settings, but lack
 ## Capabilities
 
 ### New Capabilities
+
 - `user-authentication`: Covers user registration, email-password login, session persistence, routing guards, and logout.
 
 ### Modified Capabilities
+
 <!-- None, since there are no existing specifications yet -->
 
 ## Impact

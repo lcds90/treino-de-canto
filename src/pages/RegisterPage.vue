@@ -5,13 +5,22 @@
       <div class="bubble bubble-2"></div>
     </div>
 
-    <q-card class="auth-card shadow-24 q-pa-lg text-center" style="border-radius: 20px;">
+    <q-card class="auth-card shadow-24 q-pa-lg text-center" style="border-radius: 20px">
       <q-card-section>
         <div class="brand-container q-mb-md">
-          <q-avatar size="72px" font-size="44px" color="secondary" text-color="white" icon="person_add" class="brand-logo shadow-5" />
+          <q-avatar
+            size="72px"
+            font-size="44px"
+            color="secondary"
+            text-color="white"
+            icon="person_add"
+            class="brand-logo shadow-5"
+          />
         </div>
         <h2 class="text-h4 text-weight-bolder text-secondary q-my-none">Nova Conta</h2>
-        <p class="text-subtitle2 text-grey-6 q-mt-xs q-mb-md">Cadastre-se para iniciar seus treinos personalizados</p>
+        <p class="text-subtitle2 text-grey-6 q-mt-xs q-mb-md">
+          Cadastre-se para iniciar seus treinos personalizados
+        </p>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
@@ -24,8 +33,8 @@
             rounded
             lazy-rules
             :rules="[
-              val => !!val || 'O e-mail é obrigatório',
-              val => isValidEmail(val) || 'Digite um e-mail válido'
+              (val) => !!val || 'O e-mail é obrigatório',
+              (val) => isValidEmail(val) || 'Digite um e-mail válido',
             ]"
             color="secondary"
             bg-color="white"
@@ -43,8 +52,8 @@
             rounded
             lazy-rules
             :rules="[
-              val => !!val || 'A senha é obrigatória',
-              val => val.length >= 6 || 'A senha deve ter pelo menos 6 caracteres'
+              (val) => !!val || 'A senha é obrigatória',
+              (val) => val.length >= 6 || 'A senha deve ter pelo menos 6 caracteres',
             ]"
             color="secondary"
             bg-color="white"
@@ -70,8 +79,8 @@
             rounded
             lazy-rules
             :rules="[
-              val => !!val || 'Confirme sua senha',
-              val => val === password || 'As senhas não coincidem'
+              (val) => !!val || 'Confirme sua senha',
+              (val) => val === password || 'As senhas não coincidem',
             ]"
             color="secondary"
             bg-color="white"
@@ -138,7 +147,8 @@ const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 
 function isValidEmail(val: string): boolean {
-  const emailPattern = /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const emailPattern =
+    /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return emailPattern.test(val);
 }
 
@@ -240,7 +250,9 @@ async function handleRegister() {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.5);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .body--dark .auth-card {
@@ -258,7 +270,8 @@ async function handleRegister() {
 }
 
 @keyframes pulse-avatar {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {

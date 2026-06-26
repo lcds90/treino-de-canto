@@ -1,7 +1,6 @@
 <template>
   <q-page-sticky position="bottom-right" :offset="[18, 18]" style="z-index: 100">
     <div class="row items-center q-gutter-md">
-
       <q-btn
         ref="backBtnRef"
         rounded
@@ -25,11 +24,7 @@
         <q-tooltip>Ver treino concluído de hoje</q-tooltip>
       </q-btn>
 
-      <transition
-        appear
-        enter-active-class="animated zoomIn"
-        leave-active-class="animated zoomOut"
-      >
+      <transition appear enter-active-class="animated zoomIn" leave-active-class="animated zoomOut">
         <q-chip
           v-if="isWorkoutActive"
           icon="timer"
@@ -51,7 +46,6 @@
         class="shadow-5 transition-transform"
         @click="handleMainActionClick"
       />
-
     </div>
   </q-page-sticky>
 </template>
@@ -94,7 +88,7 @@ onMounted(() => {
     stagger: 0.15,
     ease: 'elastic.out(1, 0.7)',
     delay: 0.8,
-    clearProps: 'all'
+    clearProps: 'all',
   });
 });
 
@@ -135,7 +129,8 @@ const handleBackClick = () => {
   if (hasProgress) {
     $q.dialog({
       title: 'Treino em Andamento 🏃‍♂️',
-      message: 'O seu treino está rolando! Se voltar agora, seu progresso e o tempo não serão salvos. Deseja sair mesmo assim?',
+      message:
+        'O seu treino está rolando! Se voltar agora, seu progresso e o tempo não serão salvos. Deseja sair mesmo assim?',
       cancel: { label: 'Continuar Treinando', color: 'primary', flat: true },
       ok: { label: 'Sair sem salvar', color: 'negative', unelevated: true },
       persistent: true,
@@ -156,7 +151,12 @@ const handleMainActionClick = () => {
     workoutStore.startTimer(); // Inicia o timer na Store
 
     if (fabRef.value) {
-      gsap.from(fabRef.value.$el, { scale: 0.8, duration: 0.3, ease: 'back.out(2)', clearProps: 'all' });
+      gsap.from(fabRef.value.$el, {
+        scale: 0.8,
+        duration: 0.3,
+        ease: 'back.out(2)',
+        clearProps: 'all',
+      });
     }
   } else {
     handleFinishClick();
@@ -217,7 +217,7 @@ const openFinishDialog = (btnEl: HTMLElement) => {
             timing: {
               start: startTime.value,
               end: endTime,
-              durationSeconds: elapsedSeconds.value
+              durationSeconds: elapsedSeconds.value,
             },
             tasksSnapshot: JSON.parse(JSON.stringify(tasks.value)),
           });
@@ -230,7 +230,11 @@ const openFinishDialog = (btnEl: HTMLElement) => {
     .onCancel(() => {
       // Retoma a contagem caso o usuário desista de finalizar
       workoutStore.resumeTimer();
-      gsap.fromTo(btnEl, { x: -5 }, { x: 5, duration: 0.1, yoyo: true, repeat: 3, ease: 'sine.inOut', clearProps: 'x' });
+      gsap.fromTo(
+        btnEl,
+        { x: -5 },
+        { x: 5, duration: 0.1, yoyo: true, repeat: 3, ease: 'sine.inOut', clearProps: 'x' },
+      );
     });
 };
 </script>

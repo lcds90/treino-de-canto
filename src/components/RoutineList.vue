@@ -11,10 +11,7 @@
       @end="onDragEnd"
     >
       <template #item="{ element, index }">
-        <div
-          class="col-12 col-md-8 col-lg-6 q-mb-lg"
-          :ref="(el) => setCardRef(el, index)"
-        >
+        <div class="col-12 col-md-8 col-lg-6 q-mb-lg" :ref="(el) => setCardRef(el, index)">
           <RoutineCard
             :readOnly="readOnly"
             :task="element"
@@ -38,8 +35,11 @@
     </draggable>
 
     <RoutineForm
-    v-if="!readOnly"
-    v-model="isDialogOpen" @saved="onTaskSaved" :task-to-edit="selectedTask" />
+      v-if="!readOnly"
+      v-model="isDialogOpen"
+      @saved="onTaskSaved"
+      :task-to-edit="selectedTask"
+    />
   </div>
 </template>
 
@@ -75,22 +75,27 @@ const $q = useQuasar();
 const localTasks = ref<RoutineTask[]>([]);
 
 // Mantém o array local sincronizado com a prop
-watch(() => props.tasks, (newTasks) => {
-  localTasks.value = [...newTasks];
-}, { immediate: true, deep: true });
+watch(
+  () => props.tasks,
+  (newTasks) => {
+    localTasks.value = [...newTasks];
+  },
+  { immediate: true, deep: true },
+);
 
 // Bloqueia o arrastar se a tela estiver filtrada ou ordenada diferente de "Manual"
 const isDragDisabled = computed(() => {
-  return activeFilters.value.search !== '' ||
-         activeFilters.value.platform !== '' ||
-         activeFilters.value.sortBy !== 'manual';
+  return (
+    activeFilters.value.search !== '' ||
+    activeFilters.value.platform !== '' ||
+    activeFilters.value.sortBy !== 'manual'
+  );
 });
 
 // Ação disparada ao soltar o card
 const onDragEnd = async () => {
   await routineStore.updateTasksOrder(localTasks.value);
 };
-
 
 // --- LÓGICA DE MODAIS ---
 
@@ -109,7 +114,7 @@ const openDeleteModal = (task: RoutineTask) => {
     title: 'Confirmar Deleção',
     message: `Tem certeza que deseja deletar a tarefa "${task.title}"?`,
     cancel: true,
-    persistent: true
+    persistent: true,
   }).onOk(() => {
     routineStore.removeTask(task.id);
   });
@@ -120,7 +125,7 @@ const openDuplicateModal = (task: RoutineTask) => {
     title: props.readOnly ? 'Adicionar Rotina' : 'Duplicar Rotina',
     message: `Deseja criar uma nova tarefa baseada em "${task.title}"?`,
     cancel: true,
-    persistent: true
+    persistent: true,
   }).onOk(() => {
     const { id, createdAt, updatedAt, order, ...taskData } = task; // Retiramos o order também para ir pro final da lista
     void routineStore.addTask({
@@ -130,7 +135,6 @@ const openDuplicateModal = (task: RoutineTask) => {
   });
 };
 
-
 // --- ANIMAÇÕES (GSAP) ---
 
 const setCardRef = (componentInstance: any, index: number) => {
@@ -139,26 +143,29 @@ const setCardRef = (componentInstance: any, index: number) => {
   }
 };
 
-watch(() => props.tasks, (newTasks) => {
-  if (newTasks.length > 0) {
+watch(
+  () => props.tasks,
+  (newTasks) => {
+    if (newTasks.length > 0) {
+      const validCardsRefs = cardsRefs.value.filter((el) => el !== null && el !== undefined);
 
-    const validCardsRefs = cardsRefs.value.filter(el => el !== null && el !== undefined);
+      const allElementsToAnimate = [...validCardsRefs];
+      if (addCardWrapperRef.value) {
+        allElementsToAnimate.push(addCardWrapperRef.value);
+      }
 
-    const allElementsToAnimate = [...validCardsRefs];
-    if (addCardWrapperRef.value) {
-      allElementsToAnimate.push(addCardWrapperRef.value);
+      gsap.from(allElementsToAnimate, {
+        y: 40,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.2,
+        ease: 'back.out(1.2)',
+        clearProps: 'all',
+      });
     }
-
-    gsap.from(allElementsToAnimate, {
-      y: 40,
-      opacity: 0,
-      duration: 0.6,
-      stagger: 0.2,
-      ease: 'back.out(1.2)',
-      clearProps: 'all'
-    });
-  }
-}, { immediate: true });
+  },
+  { immediate: true },
+);
 
 // Feedback visual extra quando salva uma nova tarefa
 const onTaskSaved = () => {

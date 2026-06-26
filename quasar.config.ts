@@ -11,7 +11,7 @@ export default defineConfig((/* ctx */) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ['firebase', 'test-id'],
+    boot: ['firebase', 'test-id', 'i18n'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
     css: ['app.scss'],
@@ -137,7 +137,6 @@ export default defineConfig((/* ctx */) => {
 
     // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa
     pwa: {
-
       // extendManifestJson (json) {},
       // injectPwaMetaTags: false,
       // extendPWACustomSWConf (esbuildConf) {},

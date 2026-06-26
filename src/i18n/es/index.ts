@@ -1,0 +1,48 @@
+export default {
+  menu: {
+    home: 'Inicio',
+    homeCaption: 'Página inicial',
+    routine: 'Rutina',
+    routineCaption: 'Ejercicios y videos',
+    metronome: 'Metrónomo',
+    metronomeCaption: 'Metrónomo animado',
+  },
+  auth: {
+    login: 'Iniciar Sesión',
+    register: 'Registrarse',
+    logout: 'Cerrar Sesión',
+    myAccount: 'Mi Cuenta',
+  },
+  login: {
+    welcome: 'Bienvenido',
+    subtitle: 'Inicie sesión para acceder a sus rutinas de canto',
+    email: 'Correo electrónico',
+    emailRequired: 'El correo electrónico es obligatorio',
+    emailInvalid: 'Ingrese un correo electrónico válido',
+    password: 'Contraseña',
+    passwordRequired: 'La contraseña es obligatoria',
+    passwordMinLength: 'La contraseña debe tener al menos 6 caracteres',
+    noAccount: '¿No tiene una cuenta?',
+    signUp: 'Regístrese',
+    success: '¡Inicio de sesión exitoso! ✨',
+    errorInvalidCredentials: 'Correo electrónico o contraseña incorrectos.',
+    errorTooManyRequests: 'Acceso bloqueado temporalmente debido a demasiados intentos.',
+    errorDefault: 'Fallo al autenticar. Inténtelo de nuevo.',
+  },
+  workout: {
+    subtitle: 'Siga las instrucciones de cada video y marque los ejercicios completados.',
+    bannerTitle: '¡Hoy ya se registró un entrenamiento! 💪',
+    bannerSubtitle: '¡Pero siéntase libre de entrenar más! 🎶',
+  },
+  appDescription: [
+    'Tu panel de evolución vocal.',
+    'Entrena tu voz diariamente con nuestras rutinas prácticas.',
+    '¡Mejora tu técnica vocal y canta con más confianza!',
+  ],
+  workoutTitle: [
+    '🎧 ¡Hora de soltar la voz! 🎶',
+    '🎤 ¡Prepara tu micrófono y cantemos!',
+    '🎵 ¡Dedica unos minutos a tu voz hoy!',
+  ],
+  title: 'Rutina de Canto',
+};

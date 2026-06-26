@@ -21,3 +21,4 @@ rules:
     - Use Given/When/Then format
     - Reference existing patterns before inventing new ones
     - Quando atualizar a Fonte da Verdade (spec.md), garanta que os diagramas Mermaid sejam atualizados para refletir o novo fluxo.
+    - A spec final DEVE conter pelo menos um diagrama de blocos ou de fluxo usando sintaxe ```mermaid
