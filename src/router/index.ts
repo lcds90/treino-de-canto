@@ -20,7 +20,9 @@ import { useAuthStore } from 'src/stores/auth-store';
 export default defineRouter(({ store }) => {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
-    : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory);
+    : process.env.VUE_ROUTER_MODE === 'history'
+      ? createWebHistory
+      : createWebHashHistory;
 
   const Router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
@@ -39,7 +41,7 @@ export default defineRouter(({ store }) => {
     await authStore.isReady;
 
     const isAuthenticated = authStore.isAuthenticated;
-    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
 
     if (requiresAuth && !isAuthenticated) {
       next({ name: 'login' });

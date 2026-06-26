@@ -6,10 +6,48 @@
           <q-avatar class="q-mr-sm">
             <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
           </q-avatar>
-          Rotina de Canto 🎤
+          {{ $t('title') }} 🎤
         </q-toolbar-title>
 
         <q-space />
+
+        <!-- Seletor de Idioma -->
+        <q-btn round flat icon="translate" class="q-mr-sm">
+          <q-menu auto-close>
+            <q-list style="min-width: 150px">
+              <q-item
+                clickable
+                @click="changeLocale('pt-BR')"
+                :active="settingsStore.language === 'pt-BR'"
+              >
+                <q-item-section avatar style="min-width: auto; padding-right: 8px"
+                  >🇧🇷</q-item-section
+                >
+                <q-item-section>Português</q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                @click="changeLocale('en-US')"
+                :active="settingsStore.language === 'en-US'"
+              >
+                <q-item-section avatar style="min-width: auto; padding-right: 8px"
+                  >🇺🇸</q-item-section
+                >
+                <q-item-section>English</q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                @click="changeLocale('es')"
+                :active="settingsStore.language === 'es'"
+              >
+                <q-item-section avatar style="min-width: auto; padding-right: 8px"
+                  >🇪🇸</q-item-section
+                >
+                <q-item-section>Español</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
 
         <!-- User is Authenticated -->
         <div v-if="authStore.isAuthenticated" class="row items-center q-gutter-sm">
@@ -22,10 +60,14 @@
             </q-avatar>
             <q-menu transition-show="jump-down" transition-hide="jump-up" auto-close>
               <q-list style="min-width: 200px">
-                <q-item-label header class="text-weight-bold">Minha Conta</q-item-label>
+                <q-item-label header class="text-weight-bold">{{
+                  $t('auth.myAccount')
+                }}</q-item-label>
                 <q-item class="gt-xs">
                   <q-item-section>
-                    <q-item-label class="text-caption text-grey-8">{{ authStore.user?.email }}</q-item-label>
+                    <q-item-label class="text-caption text-grey-8">{{
+                      authStore.user?.email
+                    }}</q-item-label>
                   </q-item-section>
                 </q-item>
                 <q-separator />
@@ -33,7 +75,7 @@
                   <q-item-section avatar>
                     <q-icon name="logout" color="negative" />
                   </q-item-section>
-                  <q-item-section>Sair</q-item-section>
+                  <q-item-section>{{ $t('auth.logout') }}</q-item-section>
                 </q-item>
               </q-list>
             </q-menu>
@@ -45,14 +87,14 @@
           <q-btn
             v-if="route.name !== 'login'"
             flat
-            label="Entrar"
+            :label="$t('auth.login')"
             icon="login"
             @click="goToLogin"
           />
           <q-btn
             v-if="route.name !== 'register'"
             flat
-            label="Cadastrar"
+            :label="$t('auth.register')"
             icon="person_add"
             @click="goToRegister"
           />
@@ -69,9 +111,9 @@
       >
         <q-tab
           v-for="link in linksList"
-          :key="link.title"
+          :key="link.titleKey"
           :name="link.to"
-          :label="link.title"
+          :label="$t(link.titleKey)"
           :icon="link.icon"
           class="text-weight-medium"
           @click="handleTabClick(link.to)"
@@ -89,10 +131,16 @@
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth-store';
+import { useSettingsStore } from 'src/stores/settings-store';
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+const settingsStore = useSettingsStore();
+
+const changeLocale = (lang: string) => {
+  settingsStore.updateLanguage(lang);
+};
 
 const userEmailInitial = computed(() => {
   const email = authStore.user?.email || '';
@@ -101,20 +149,16 @@ const userEmailInitial = computed(() => {
 
 const linksList = [
   {
-    title: 'Início',
-    caption: 'Página inicial',
+    titleKey: 'menu.home',
     icon: 'home',
     to: '/',
   },
   {
-    title: 'Rotina',
-    caption: 'Exercícios e vídeos',
+    titleKey: 'menu.routine',
     icon: 'mic',
     to: '/treino',
   },
-  {
-    title: 'Metrônomo',
-    caption: 'Metrônomo animado',
+    titleKey: 'menu.metronome',
     icon: 'av_timer',
     to: '/metronomo',
   },

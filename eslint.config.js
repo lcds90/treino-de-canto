@@ -1,9 +1,9 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import pluginVue from 'eslint-plugin-vue'
-import pluginQuasar from '@quasar/app-vite/eslint'
-import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
-import prettierSkipFormatting from '@vue/eslint-config-prettier/skip-formatting'
+import js from '@eslint/js';
+import globals from 'globals';
+import pluginVue from 'eslint-plugin-vue';
+import pluginQuasar from '@quasar/app-vite/eslint';
+import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript';
+import prettierSkipFormatting from '@vue/eslint-config-prettier/skip-formatting';
 
 export default defineConfigWithVueTs(
   {
@@ -20,9 +20,9 @@ export default defineConfigWithVueTs(
     rules: {
       '@typescript-eslint/consistent-type-imports': [
         'warn', // <-- Transformado em Warn
-        { prefer: 'type-imports' }
+        { prefer: 'type-imports' },
       ],
-    }
+    },
   },
 
   vueTsConfigs.recommendedTypeChecked,
@@ -40,8 +40,8 @@ export default defineConfigWithVueTs(
         cordova: 'readonly',
         Capacitor: 'readonly',
         chrome: 'readonly',
-        browser: 'readonly'
-      }
+        browser: 'readonly',
+      },
     },
 
     rules: {
@@ -52,18 +52,18 @@ export default defineConfigWithVueTs(
       '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/no-redundant-type-constituents': 'warn',
       '@typescript-eslint/no-floating-promises': 'warn',
-      'prefer-const': 'warn'
-    }
+      'prefer-const': 'warn',
+    },
   },
 
   {
-    files: [ 'src-pwa/custom-service-worker.ts' ],
+    files: ['src-pwa/custom-service-worker.ts'],
     languageOptions: {
       globals: {
-        ...globals.serviceworker
-      }
-    }
+        ...globals.serviceworker,
+      },
+    },
   },
 
-  prettierSkipFormatting
-)
+  prettierSkipFormatting,
+);

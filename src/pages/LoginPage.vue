@@ -5,27 +5,34 @@
       <div class="bubble bubble-2"></div>
     </div>
 
-    <q-card class="auth-card shadow-24 q-pa-lg text-center" style="border-radius: 20px;">
+    <q-card class="auth-card shadow-24 q-pa-lg text-center" style="border-radius: 20px">
       <q-card-section>
         <div class="brand-container q-mb-md">
-          <q-avatar size="72px" font-size="44px" color="primary" text-color="white" icon="mic" class="brand-logo shadow-5" />
+          <q-avatar
+            size="72px"
+            font-size="44px"
+            color="primary"
+            text-color="white"
+            icon="mic"
+            class="brand-logo shadow-5"
+          />
         </div>
-        <h2 class="text-h4 text-weight-bolder text-primary q-my-none">Bem-vindo</h2>
-        <p class="text-subtitle2 text-grey-6 q-mt-xs q-mb-md">Faça login para acessar suas rotinas de canto</p>
+        <h2 class="text-h4 text-weight-bolder text-primary q-my-none">{{ $t('login.welcome') }}</h2>
+        <p class="text-subtitle2 text-grey-6 q-mt-xs q-mb-md">{{ $t('login.subtitle') }}</p>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
         <q-form @submit.prevent="handleLogin" class="q-gutter-md">
           <q-input
             v-model="email"
-            label="E-mail"
+            :label="$t('login.email')"
             type="email"
             outlined
             rounded
             lazy-rules
             :rules="[
-              val => !!val || 'O e-mail é obrigatório',
-              val => isValidEmail(val) || 'Digite um e-mail válido'
+              (val) => !!val || $t('login.emailRequired'),
+              (val) => isValidEmail(val) || $t('login.emailInvalid'),
             ]"
             color="primary"
             bg-color="white"
@@ -37,14 +44,14 @@
 
           <q-input
             v-model="password"
-            label="Senha"
+            :label="$t('login.password')"
             :type="showPassword ? 'text' : 'password'"
             outlined
             rounded
             lazy-rules
             :rules="[
-              val => !!val || 'A senha é obrigatória',
-              val => val.length >= 6 || 'A senha deve ter pelo menos 6 caracteres'
+              (val) => !!val || $t('login.passwordRequired'),
+              (val) => val.length >= 6 || $t('login.passwordMinLength'),
             ]"
             color="primary"
             bg-color="white"
@@ -68,7 +75,7 @@
 
           <div class="q-mt-md">
             <q-btn
-              label="Entrar"
+              :label="$t('auth.login')"
               type="submit"
               color="primary"
               text-color="white"
@@ -88,9 +95,9 @@
 
       <q-card-section class="q-pt-none q-pb-md">
         <div class="text-grey-7 text-body2">
-          Não tem uma conta?
+          {{ $t('login.noAccount') }}
           <router-link :to="{ name: 'register' }" class="auth-link text-weight-bold text-secondary">
-            Cadastre-se
+            {{ $t('login.signUp') }}
           </router-link>
         </div>
       </q-card-section>
@@ -103,17 +110,20 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth-store';
 import { useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
 
 const authStore = useAuthStore();
 const router = useRouter();
 const $q = useQuasar();
+const { t } = useI18n();
 
 const email = ref('');
 const password = ref('');
 const showPassword = ref(false);
 
 function isValidEmail(val: string): boolean {
-  const emailPattern = /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const emailPattern =
+    /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return emailPattern.test(val);
 }
 
@@ -122,20 +132,20 @@ async function handleLogin() {
     await authStore.login(email.value, password.value);
     $q.notify({
       type: 'positive',
-      message: 'Login realizado com sucesso! ✨',
+      message: t('login.success'),
       position: 'top-right',
     });
     void router.push({ name: 'index' });
   } catch (error: any) {
-    let errorMessage = 'Falha ao autenticar. Tente novamente.';
+    let errorMessage = t('login.errorDefault');
     if (
       error.code === 'auth/invalid-credential' ||
       error.code === 'auth/wrong-password' ||
       error.code === 'auth/user-not-found'
     ) {
-      errorMessage = 'E-mail ou senha incorretos.';
+      errorMessage = t('login.errorInvalidCredentials');
     } else if (error.code === 'auth/too-many-requests') {
-      errorMessage = 'Acesso bloqueado temporariamente por excesso de tentativas.';
+      errorMessage = t('login.errorTooManyRequests');
     }
     $q.notify({
       type: 'negative',
@@ -208,7 +218,9 @@ async function handleLogin() {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.5);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .body--dark .auth-card {
@@ -226,7 +238,8 @@ async function handleLogin() {
 }
 
 @keyframes pulse-mic {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {

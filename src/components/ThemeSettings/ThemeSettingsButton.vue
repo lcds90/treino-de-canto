@@ -6,14 +6,14 @@
     icon="settings"
     color="grey-6"
     class="absolute-top-right q-mt-md q-mr-md"
-    style="z-index: 10;"
+    style="z-index: 10"
     @click="isOpen = true"
   >
     <q-tooltip>Configurações do App</q-tooltip>
   </q-btn>
 
   <q-dialog v-model="isOpen" transition-show="scale" transition-hide="scale">
-    <ThemeSettings style="width: 700px; max-width: 95vw;" />
+    <ThemeSettings style="width: 700px; max-width: 95vw" />
   </q-dialog>
 </template>
 
@@ -34,7 +34,7 @@ onMounted(() => {
         rotation: -180,
         opacity: 0,
         duration: 0.6,
-        ease: 'back.out(2)'
+        ease: 'back.out(2)',
       });
     }
   }, 100);

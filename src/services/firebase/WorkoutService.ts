@@ -22,9 +22,9 @@ export class FirebaseWorkoutService implements IWorkoutService {
   async getAll(): Promise<WorkoutSession[]> {
     return this.logger.track('GET_ALL_WORKOUTS', 'workout_sessions', null, async () => {
       const querySnapshot = await getDocs(this.getWorkoutsCollection());
-      return querySnapshot.docs.map(doc => ({
+      return querySnapshot.docs.map((doc) => ({
         ...doc.data(),
-        id: doc.id
+        id: doc.id,
       })) as WorkoutSession[];
     });
   }

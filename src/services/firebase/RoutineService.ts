@@ -30,9 +30,9 @@ export class FirebaseRoutineService implements IRoutineService {
   async getAll(): Promise<RoutineTask[]> {
     return this.logger.track('GET_ALL_ROUTINES', 'routines', null, async () => {
       const querySnapshot = await getDocs(this.getRoutinesCollection());
-      return querySnapshot.docs.map(doc => ({
+      return querySnapshot.docs.map((doc) => ({
         ...doc.data(), // 1º: Despeja os dados do banco primeiro
-        id: doc.id     // 2º: OBRIGA o ID real do documento a ser o vencedor
+        id: doc.id, // 2º: OBRIGA o ID real do documento a ser o vencedor
       })) as RoutineTask[];
     });
   }
@@ -44,7 +44,7 @@ export class FirebaseRoutineService implements IRoutineService {
       if (docSnap.exists()) {
         return {
           ...docSnap.data(),
-          id: docSnap.id
+          id: docSnap.id,
         } as RoutineTask;
       }
       return null;

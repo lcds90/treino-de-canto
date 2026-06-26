@@ -1,0 +1,48 @@
+export default {
+  menu: {
+    home: 'Home',
+    homeCaption: 'Initial page',
+    routine: 'Routine',
+    routineCaption: 'Exercises and videos',
+    metronome: 'Metronome',
+    metronomeCaption: 'Animated metronome',
+  },
+  auth: {
+    login: 'Login',
+    register: 'Register',
+    logout: 'Logout',
+    myAccount: 'My Account',
+  },
+  login: {
+    welcome: 'Welcome',
+    subtitle: 'Log in to access your singing routines',
+    email: 'Email',
+    emailRequired: 'Email is required',
+    emailInvalid: 'Enter a valid email address',
+    password: 'Password',
+    passwordRequired: 'Password is required',
+    passwordMinLength: 'Password must be at least 6 characters long',
+    noAccount: "Don't have an account?",
+    signUp: 'Sign up',
+    success: 'Login successful! ✨',
+    errorInvalidCredentials: 'Incorrect email or password.',
+    errorTooManyRequests: 'Access temporarily blocked due to too many attempts.',
+    errorDefault: 'Failed to authenticate. Try again.',
+  },
+  workout: {
+    subtitle: 'Follow the instructions for each video and mark the completed exercises.',
+    bannerTitle: 'A workout has been registered today! 💪',
+    bannerSubtitle: 'But feel free to train some more! 🎶',
+  },
+  appDescription: [
+    'Your vocal evolution dashboard.',
+    'Train your voice daily with our practical routines.',
+    'Improve your vocal technique and sing with more confidence!',
+  ],
+  workoutTitle: [
+    '🎧 Time to release your voice! 🎶',
+    "🎤 Get your microphone ready and let's sing!",
+    '🎵 Dedicate a few minutes to your voice today!',
+  ],
+  title: 'Singing Routine',
+};

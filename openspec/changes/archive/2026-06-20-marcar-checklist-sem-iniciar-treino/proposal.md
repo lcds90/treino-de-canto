@@ -12,7 +12,7 @@ Atualmente, o usuário consegue marcar itens da checklist de exercícios na roti
 
 ### New Capabilities
 
-*(Nenhuma)*
+_(Nenhuma)_
 
 ### Modified Capabilities
 

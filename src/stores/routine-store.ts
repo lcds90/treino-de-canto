@@ -1,4 +1,3 @@
-
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { RoutineTask } from 'src/components/models';
@@ -21,15 +20,16 @@ export const useRoutineStore = defineStore('routine', () => {
     platform: '',
     createdAt: '',
     updatedAt: '',
-    sortBy: 'manual'
+    sortBy: 'manual',
   });
 
   const filteredTasks = computed(() => {
-    const result = tasks.value.filter(task => {
+    const result = tasks.value.filter((task) => {
       if (activeFilters.value.search) {
         const term = activeFilters.value.search.toLowerCase().trim();
-        const checklistTexts = task.checklist.map(c => c.label).join(' ');
-        const everything = `${task.title} ${task.instructions} ${task.mediaUrl} ${checklistTexts}`.toLowerCase();
+        const checklistTexts = task.checklist.map((c) => c.label).join(' ');
+        const everything =
+          `${task.title} ${task.instructions} ${task.mediaUrl} ${checklistTexts}`.toLowerCase();
         if (!everything.includes(term)) return false;
       }
       if (activeFilters.value.platform && activeFilters.value.platform !== '') {
@@ -45,8 +45,10 @@ export const useRoutineStore = defineStore('routine', () => {
     });
 
     result.sort((a, b) => {
-      if (activeFilters.value.sortBy === 'newest') return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
-      if (activeFilters.value.sortBy === 'oldest') return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+      if (activeFilters.value.sortBy === 'newest')
+        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+      if (activeFilters.value.sortBy === 'oldest')
+        return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
       if (activeFilters.value.sortBy === 'alphabetical') return a.title.localeCompare(b.title);
       return ((a as any).order || 0) - ((b as any).order || 0);
     });
@@ -82,7 +84,7 @@ export const useRoutineStore = defineStore('routine', () => {
   const updateTask = async (updatedTask: RoutineTask) => {
     try {
       await routineService.update(updatedTask);
-      const index = tasks.value.findIndex(t => t.id === updatedTask.id);
+      const index = tasks.value.findIndex((t) => t.id === updatedTask.id);
       if (index !== -1) tasks.value[index] = updatedTask;
     } catch (error) {
       console.error('Falha ao atualizar tarefa:', error);
@@ -97,7 +99,7 @@ export const useRoutineStore = defineStore('routine', () => {
         return task;
       });
       tasks.value = updatedList;
-      await Promise.all(updatedList.map(task => routineService.update(task)));
+      await Promise.all(updatedList.map((task) => routineService.update(task)));
     } catch (error) {
       console.error('Erro ao reordenar:', error);
     }
@@ -107,7 +109,7 @@ export const useRoutineStore = defineStore('routine', () => {
     try {
       await routineService.delete(id);
       const reordered = tasks.value
-        .filter(task => task.id !== id)
+        .filter((task) => task.id !== id)
         .map((task, index) => ({ ...task, order: index + 1 }));
       tasks.value = reordered;
       await updateTasksOrder(reordered);
@@ -117,9 +119,9 @@ export const useRoutineStore = defineStore('routine', () => {
   };
 
   const resetAllChecklists = () => {
-    tasks.value.forEach(task => {
+    tasks.value.forEach((task) => {
       if (task.checklist && task.checklist.length > 0) {
-        task.checklist.forEach(item => {
+        task.checklist.forEach((item) => {
           item.done = false;
         });
       }

@@ -1,27 +1,27 @@
 export interface ChecklistItem {
-  id: string
-  label: string
-  done: boolean
+  id: string;
+  label: string;
+  done: boolean;
 }
 
-export type PlatformType = 'youtube' | 'udemy' | 'hotmart' | 'yousician' | 'other'
+export type PlatformType = 'youtube' | 'udemy' | 'hotmart' | 'yousician' | 'other';
 
 export interface RoutineTask {
-  id: string
-  title: string
-  platform: PlatformType
-  mediaUrl: string
-  instructions: string
-  checklist: ChecklistItem[]
-  order?: number
-  createdAt?: string
-  updatedAt?: string
+  id: string;
+  title: string;
+  platform: PlatformType;
+  mediaUrl: string;
+  instructions: string;
+  checklist: ChecklistItem[];
+  order?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ChecklistItem {
-  id: string
-  label: string
-  done: boolean
+  id: string;
+  label: string;
+  done: boolean;
 }
 
 export interface WorkoutMetrics {
@@ -32,9 +32,9 @@ export interface WorkoutMetrics {
 }
 
 export interface WoroutTiming {
-    durationSeconds: number;
-    start: string | Date;
-    end: string | Date;
+  durationSeconds: number;
+  start: string | Date;
+  end: string | Date;
 }
 
 export interface WorkoutSession {

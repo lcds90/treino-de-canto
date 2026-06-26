@@ -9,11 +9,12 @@ Atualmente, o cronômetro do treino calcula incorretamente os minutos exibidos q
 ## Capabilities
 
 ### New Capabilities
+
 - `workout-timer`: Ajustar a formatação de tempo do cronômetro do treino para exibição correta de horas, minutos e segundos no resumo do treino concluído.
 
 ### Modified Capabilities
-<!-- Nenhuma especificação existente está sendo modificada -->
--
+
+## <!-- Nenhuma especificação existente está sendo modificada -->
 
 ## Impact
 

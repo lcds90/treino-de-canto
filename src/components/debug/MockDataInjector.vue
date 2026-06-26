@@ -32,13 +32,13 @@ const handleInjection = async () => {
     $q.notify({
       type: 'positive',
       message: `${SINGING_ROUTINE_MOCKS.length} rotinas injetadas com sucesso!`,
-      position: 'top'
+      position: 'top',
     });
   } catch (error) {
     console.error('Erro na injeção de mocks:', error);
     $q.notify({
       type: 'negative',
-      message: 'Falha ao injetar dados no Firebase.'
+      message: 'Falha ao injetar dados no Firebase.',
     });
   } finally {
     loading.value = false;

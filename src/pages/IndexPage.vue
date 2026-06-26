@@ -3,7 +3,7 @@
     <div class="row justify-center q-mb-xl q-mt-lg">
       <div class="col-12 col-md-8 text-center" ref="heroRef">
         <h1 class="text-h3 text-weight-bolder text-primary q-mb-sm">
-          {{ appTitle }}
+          {{ $t('title') }}
         </h1>
         <p class="text-subtitle1">{{ appDescription }}</p>
         <theme-settings-button />
@@ -43,20 +43,20 @@
       </transition>
       <div class="row justify-center items-center">
         <q-btn
-        ref="btnRef"
-        color="secondary"
-        text-color="white"
-        size="xl"
-        rounded
-        unelevated
-        class="study-btn shadow-4"
-        @click="startStudy"
-        v-test="'start-study-btn'"
-      >
-        <span class="text-weight-bold text-h6">
-         {{ workoutStore.hasTrainedToday ? 'Treinar Novamente' : 'Começar Treino' }} 🚀
-        </span>
-      </q-btn>
+          ref="btnRef"
+          color="secondary"
+          text-color="white"
+          size="xl"
+          rounded
+          unelevated
+          class="study-btn shadow-4"
+          @click="startStudy"
+          v-test="'start-study-btn'"
+        >
+          <span class="text-weight-bold text-h6">
+            {{ workoutStore.hasTrainedToday ? 'Treinar Novamente' : 'Começar Treino' }} 🚀
+          </span>
+        </q-btn>
       </div>
     </div>
 
@@ -92,7 +92,7 @@ const metricsStore = useMetricsStore();
 const settingsStore = useSettingsStore();
 
 const { bestDay, currentStreak, weeklyChartData } = storeToRefs(metricsStore);
-const { appTitle, appDescription } = storeToRefs(settingsStore);
+const { appDescription } = storeToRefs(settingsStore);
 
 const heroRef = ref<HTMLElement | null>(null);
 const btnRef = ref<any | null>(null);

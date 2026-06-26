@@ -6,6 +6,6 @@ export interface ILogger {
     operationName: string,
     pathOrUrl: string,
     payload: any,
-    operation: () => Promise<T>
+    operation: () => Promise<T>,
   ): Promise<T>;
 }

@@ -5,7 +5,7 @@
       <div class="text-h5 text-weight-bolder q-mt-sm text-capitalize">
         {{ formattedDate }}
       </div>
-      <div class="text-subtitle2  q-mt-xs text-center">
+      <div class="text-subtitle2 q-mt-xs text-center">
         <span class="text-positive text-weight-bold">{{ bestDay.completed }} completos</span>
         <span v-if="bestDay.partial > 0">, {{ bestDay.partial }} parciais</span>
       </div>
@@ -13,10 +13,8 @@
 
     <template v-else>
       <div ref="iconRef" class="trophy-icon" style="filter: grayscale(1); opacity: 0.5">🎯</div>
-      <div class="text-h6 text-weight-bolder  q-mt-sm">Sem Recordes</div>
-      <div class="text-caption  q-mt-xs text-center">
-        Faça seu primeiro exercício completo hoje!
-      </div>
+      <div class="text-h6 text-weight-bolder q-mt-sm">Sem Recordes</div>
+      <div class="text-caption q-mt-xs text-center">Faça seu primeiro exercício completo hoje!</div>
     </template>
   </div>
 </template>
