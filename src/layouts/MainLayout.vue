@@ -158,6 +158,7 @@ const linksList = [
     icon: 'mic',
     to: '/treino',
   },
+  {
     titleKey: 'menu.metronome',
     icon: 'av_timer',
     to: '/metronomo',
