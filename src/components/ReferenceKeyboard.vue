@@ -111,7 +111,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { useSettingsStore } from 'src/stores/settings-store';
 import { audioSynthesizer } from 'src/services/audio-synthesizer';
-import { VOCAL_RANGES, getFrequencyFromMidi, getNoteNameFromMidi } from 'src/services';
+import { VOCAL_RANGES, getFrequencyFromMidi, getNoteNameFromMidi, type VocalRangeInfo } from 'src/services';
 
 const props = defineProps<{
   hideClose?: boolean;
@@ -180,6 +180,7 @@ const handleKeyUp = (event: KeyboardEvent) => {
   if (pressedKeys.value.has(key)) {
     pressedKeys.value.delete(key);
     const mapping = KEY_MAP[key];
+    if (!mapping) return;
     const targetKey = mapping.type === 'white' 
       ? whiteKeys.value[mapping.index] 
       : blackKeys.value[mapping.index];
@@ -268,8 +269,8 @@ watch(
   { immediate: true }
 );
 
-const vocalRangeInfo = computed(() => {
-  return VOCAL_RANGES[settingsStore.vocalRange] || VOCAL_RANGES.tenor;
+const vocalRangeInfo = computed<VocalRangeInfo>(() => {
+  return (VOCAL_RANGES[settingsStore.vocalRange] || VOCAL_RANGES.tenor) as VocalRangeInfo;
 });
 
 const vocalRangeLimits = computed(() => {
@@ -298,7 +299,7 @@ const whiteKeys = computed(() => {
 
   // Oitava 1
   for (let i = 0; i < 7; i++) {
-    const midi = (baseOctave.value + 1) * 12 + offsets[i];
+    const midi = (baseOctave.value + 1) * 12 + offsets[i]!;
     keys.push({
       midi,
       name: getNoteNameFromMidi(midi),
@@ -307,7 +308,7 @@ const whiteKeys = computed(() => {
   }
   // Oitava 2
   for (let i = 0; i < 7; i++) {
-    const midi = (baseOctave.value + 2) * 12 + offsets[i];
+    const midi = (baseOctave.value + 2) * 12 + offsets[i]!;
     keys.push({
       midi,
       name: getNoteNameFromMidi(midi),
@@ -325,22 +326,22 @@ const blackKeys = computed(() => {
 
   // Oitava 1
   for (let i = 0; i < 5; i++) {
-    const midi = (baseOctave.value + 1) * 12 + offsets[i];
+    const midi = (baseOctave.value + 1) * 12 + offsets[i]!;
     keys.push({
       midi,
       name: getNoteNameFromMidi(midi),
       frequency: getFrequencyFromMidi(midi),
-      whiteIndex: whiteIndexes[i],
+      whiteIndex: whiteIndexes[i]!,
     });
   }
   // Oitava 2
   for (let i = 0; i < 5; i++) {
-    const midi = (baseOctave.value + 2) * 12 + offsets[i];
+    const midi = (baseOctave.value + 2) * 12 + offsets[i]!;
     keys.push({
       midi,
       name: getNoteNameFromMidi(midi),
       frequency: getFrequencyFromMidi(midi),
-      whiteIndex: whiteIndexes[i] + 7,
+      whiteIndex: whiteIndexes[i]! + 7,
     });
   }
   return keys;

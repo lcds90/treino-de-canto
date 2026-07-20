@@ -516,7 +516,7 @@ const getStaffY = (midi: number) => {
   const pcToDiatonic = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6];
   const pc = visualMidi % 12;
   const octave = Math.floor(visualMidi / 12) - 1;
-  const diatonicIndex = octave * 7 + pcToDiatonic[pc];
+  const diatonicIndex = octave * 7 + pcToDiatonic[pc]!;
 
   // Ref G4 (MIDI 67) -> 2ª linha -> y=60
   const refDiatonic = 4 * 7 + 4;

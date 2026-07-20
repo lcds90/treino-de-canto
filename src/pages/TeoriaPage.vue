@@ -112,11 +112,11 @@
                   class="beat-pulse-box text-weight-bold flex flex-center"
                   :class="{
                     'active-beat': currentBeat === (beatIdx - 1),
-                    'rest-beat': item.examplePattern[beatIdx - 1].isRest,
-                    'note-beat': !item.examplePattern[beatIdx - 1].isRest
+                    'rest-beat': item.examplePattern[beatIdx - 1]?.isRest,
+                    'note-beat': !item.examplePattern[beatIdx - 1]?.isRest
                   }"
                 >
-                  <q-icon :name="item.examplePattern[beatIdx - 1].isRest ? 'volume_off' : 'music_note'" size="xs" />
+                  <q-icon :name="item.examplePattern[beatIdx - 1]?.isRest ? 'volume_off' : 'music_note'" size="xs" />
                   <div class="text-caption">{{ beatIdx }}</div>
                 </div>
               </div>
@@ -374,6 +374,7 @@ const playAudioExample = (item: typeof restItems[0]) => {
       if (playingId.value !== item.id) break;
       currentBeat.value = i;
       const note = pattern[i];
+      if (!note) continue;
 
       // Metrônomo no fundo (Beep de metrônomo em C5, curtinho)
       void audioSynthesizer.playNote(523.25, 0.02);
@@ -452,7 +453,7 @@ const handleScroll = () => {
   // ativa automaticamente a última seção (Laboratório de Ritmos / interativo)
   const isBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 30;
   if (isBottom) {
-    activeSection.value = sections[sections.length - 1].id;
+    activeSection.value = sections[sections.length - 1]?.id || 'interativo';
     return;
   }
 
