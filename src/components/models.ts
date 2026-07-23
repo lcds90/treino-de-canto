@@ -6,6 +6,12 @@ export interface ChecklistItem {
 
 export type PlatformType = 'youtube' | 'udemy' | 'hotmart' | 'yousician' | 'other' | 'vocalize' | 'melisma';
 
+export interface VideoTimestamp {
+  id: string;
+  label: string;
+  time: number; // em segundos
+}
+
 export interface RoutineTask {
   id: string;
   title: string;
@@ -21,6 +27,7 @@ export interface RoutineTask {
   measures?: number;
   noteDuration?: 'half' | 'quarter' | 'eighth' | 'sixteenth' | 'mixed';
   includeRests?: boolean;
+  timestamps?: VideoTimestamp[];
 }
 
 export interface ChecklistItem {

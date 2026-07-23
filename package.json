@@ -28,7 +28,8 @@
     "vue-i18n": "^9.14.0",
     "vue-router": "^5.0.3",
     "vue3-apexcharts": "^1.11.1",
-    "vuedraggable": "^4.1.0"
+    "vuedraggable": "^4.1.0",
+    "youtube-player": "^5.6.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
