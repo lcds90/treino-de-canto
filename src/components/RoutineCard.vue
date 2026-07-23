@@ -84,7 +84,34 @@
       </div>
     </q-card-section>
 
-    <q-video v-if="task.platform === 'youtube'" :src="getEmbedUrl(task.mediaUrl)" :ratio="16 / 9" />
+    <div v-if="task.platform === 'youtube'" class="youtube-player-container">
+      <YoutubePlayer
+        ref="youtubePlayerRef"
+        :media-url="task.mediaUrl"
+        :task-id="task.id"
+        @ended="localDone = true"
+      />
+      <!-- Seções do Vídeo (Timestamps) -->
+      <div v-if="task.timestamps && task.timestamps.length" class="q-pa-sm bg-grey-2 border-top" :class="{ 'bg-grey-9 text-white': $q.dark.isActive }">
+        <div class="text-caption text-weight-bold q-mb-xs row items-center">
+          <q-icon name="playlist_play" size="sm" class="q-mr-xs" />
+          Pular para seção:
+        </div>
+        <div class="row q-gutter-xs">
+          <q-btn
+            v-for="ts in task.timestamps"
+            :key="ts.id"
+            size="xs"
+            color="primary"
+            outline
+            unelevated
+            icon="schedule"
+            :label="`${ts.label} (${formatSeconds(ts.time)})`"
+            @click="seekVideo(ts.time)"
+          />
+        </div>
+      </div>
+    </div>
 
     <!-- Player de Exercício Vocal Dinâmico (Vocalize e Melisma) -->
     <div v-else-if="task.platform === 'vocalize' || task.platform === 'melisma'" class="vocalize-player-container q-pa-md text-center bg-grey-1" :class="{ 'dark-player bg-grey-10': $q.dark.isActive }">
@@ -386,6 +413,7 @@ import { ref, computed, watch } from 'vue';
 import gsap from 'gsap';
 import AnimatedCheckbox from './AnimatedCheckbox.vue';
 import type { RoutineTask, PlatformType } from './models';
+import YoutubePlayer from './YoutubePlayer.vue';
 import { useQuasar } from 'quasar';
 import { useWorkoutStore } from 'src/stores/workout-store';
 import { useRoutineStore } from 'src/stores/routine-store';
@@ -405,6 +433,20 @@ const $q = useQuasar();
 const workoutStore = useWorkoutStore();
 const routineStore = useRoutineStore();
 const settingsStore = useSettingsStore();
+
+const youtubePlayerRef = ref<any>(null);
+
+const seekVideo = (seconds: number) => {
+  if (youtubePlayerRef.value) {
+    youtubePlayerRef.value.seekTo(seconds);
+  }
+};
+
+const formatSeconds = (sec: number): string => {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+};
 
 const localDone = computed({
   get() {

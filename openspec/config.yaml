@@ -14,11 +14,16 @@ rules:
     - O design técnico DEVE conter pelo menos um diagrama de blocos ou de fluxo usando sintaxe ```mermaid.
     - Utilize cabeçalhos Markdown para facilitar a geração do Outline (Índice) automático no VS Code.
   proposal:
-    - Include rollback plan
-    - Identify affected teams
+    - Inclua o plano de rollback
     - Resuma o impacto visual e as conexões da nova funcionalidade com os módulos existentes.
   specs:
     - Use Given/When/Then format
     - Reference existing patterns before inventing new ones
     - Quando atualizar a Fonte da Verdade (spec.md), garanta que os diagramas Mermaid sejam atualizados para refletir o novo fluxo.
     - A spec final DEVE conter pelo menos um diagrama de blocos ou de fluxo usando sintaxe ```mermaid
+  tasks:
+    - Use checkboxes to track progress
+    - Tasks DEVE ser granular o suficiente para permitir que cada item seja implementado e testado de forma independente.
+    - Cada tarefa DEVE ter um resultado esperado claro e verificável.
+    - Utilize SEMPRE HTML semântico para estruturar o conteúdo, evitando o uso de `<div>` e `<span>` sem necessidade.
+    - Garanta acessibilidade (a11y) em todos os elementos interativos, incluindo botões, links e campos de formulário.

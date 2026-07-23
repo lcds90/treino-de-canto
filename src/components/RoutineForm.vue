@@ -85,6 +85,67 @@
             :rules="[(val) => !!val || 'O link é obrigatório']"
           />
 
+          <!-- Seção de Marcações de Tempo (Apenas para YouTube) -->
+          <section v-if="formData.platform === 'youtube'">
+            <div class="text-subtitle2 text-weight-bold text-primary q-mb-xs">
+              Seções do Vídeo (Timestamps) ⏱️
+            </div>
+            <div class="text-caption text-grey-7 q-mb-md">
+              Adicione marcações para saltar rapidamente para partes do vídeo durante o treino.
+            </div>
+
+            <!-- Lista de Timestamps Existentes -->
+            <q-list v-if="formData.timestamps && formData.timestamps.length" bordered separator class="rounded-borders q-mb-md">
+              <q-item v-for="ts in formData.timestamps" :key="ts.id" class="q-py-xs">
+                <q-item-section>
+                  <q-item-label class="text-weight-medium">{{ ts.label }}</q-item-label>
+                  <q-item-label caption class="text-secondary">{{ formatSeconds(ts.time) }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-btn flat round dense color="negative" icon="delete" size="sm" @click="removeTimestamp(ts.id)" />
+                </q-item-section>
+              </q-item>
+            </q-list>
+
+            <!-- Adicionar Novo Timestamp -->
+            <div class="row q-col-gutter-sm items-start">
+              <div class="col-5">
+                <q-input
+                  v-model="newTimestampLabel"
+                  label="Rótulo (ex: Aquecimento)"
+                  outlined
+                  dense
+                  hide-bottom-space
+                  color="primary"
+                />
+              </div>
+              <div class="col-5">
+                <q-input
+                  v-model="newTimestampTime"
+                  label="Tempo (MM:SS ou s)"
+                  placeholder="01:30 ou 90"
+                  outlined
+                  dense
+                  hide-bottom-space
+                  color="primary"
+                  :rules="[validateTimeRule]"
+                />
+              </div>
+              <div class="col-2 text-right">
+                <q-btn
+                  color="primary"
+                  icon="add"
+                  unelevated
+                  dense
+                  style="height: 40px; width: 100%;"
+                  @click="addTimestamp"
+                >
+                  <q-tooltip>Adicionar seção</q-tooltip>
+                </q-btn>
+              </div>
+            </div>
+          </section>
+
           <!-- 4. Instruções - Ocultado se for Vocalize/Melisma -->
           <q-input
             v-if="!isVocalExercise"
@@ -138,7 +199,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch } from 'vue';
 import gsap from 'gsap';
-import type { RoutineTask, ChecklistItem } from 'src/components/models';
+import type { RoutineTask, ChecklistItem, VideoTimestamp } from 'src/components/models';
 import { useRoutineStore } from 'src/stores/routine-store';
 
 const props = defineProps({
@@ -168,6 +229,7 @@ const initialForm = (): Omit<RoutineTask, 'id' | 'createdAt' | 'updatedAt'> => (
   bpm: 120,
   noteDuration: 'quarter',
   includeRests: false,
+  timestamps: [],
 });
 
 const formData = reactive(initialForm());
@@ -195,11 +257,11 @@ const handleSave = async (preventClose?: boolean) => {
   try {
     if (isEditMode.value && props.taskToEdit) {
       // Chama a ação de UPDATE na store
-      await routineStore.updateTask({ ...formData, id: props.taskToEdit.id } as RoutineTask);
+      await routineStore.updateTask({ ...formData, id: props.taskToEdit.id });
     } else {
       await routineStore.addTask({
         ...formData,
-      } as Omit<RoutineTask, 'id'>);
+      });
     }
     if (preventClose) {
       resetForm();
@@ -228,6 +290,63 @@ const dialogCardRef = ref<any | null>(null);
 const saveBtnRef = ref<any | null>(null);
 const formRef = ref<any | null>(null);
 const isSaving = ref(false);
+
+// --- ESTADOS E AUXILIARES DO TIMESTAMP ---
+const newTimestampLabel = ref('');
+const newTimestampTime = ref('');
+
+const validateTimeRule = (val: string) => {
+  if (!val) return true;
+  const isMmSs = /^(\d+):([0-5]\d)$/.test(val);
+  const isSeconds = /^\d+$/.test(val);
+  return isMmSs || isSeconds || 'Formatos aceitos: MM:SS ou segundos';
+};
+
+const parseTimeToSeconds = (val: string): number => {
+  if (val.includes(':')) {
+    const parts = val.split(':');
+    const minutes = parseInt(parts[0] || '0', 10);
+    const seconds = parseInt(parts[1] || '0', 10);
+    return minutes * 60 + seconds;
+  }
+  return parseInt(val, 10);
+};
+
+const formatSeconds = (sec: number): string => {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+};
+
+const addTimestamp = () => {
+  const label = newTimestampLabel.value.trim();
+  const timeVal = newTimestampTime.value.trim();
+  if (!label || !timeVal) return;
+
+  const valid = validateTimeRule(timeVal);
+  if (valid !== true) return;
+
+  const seconds = parseTimeToSeconds(timeVal);
+
+  if (!formData.timestamps) {
+    formData.timestamps = [];
+  }
+
+  formData.timestamps.push({
+    id: Math.random().toString(36).substring(2, 9),
+    label,
+    time: seconds,
+  });
+
+  newTimestampLabel.value = '';
+  newTimestampTime.value = '';
+};
+
+const removeTimestamp = (id: string) => {
+  if (formData.timestamps) {
+    formData.timestamps = formData.timestamps.filter((ts) => ts.id !== id);
+  }
+};
 
 const platformOptions = [
   { label: 'Vocalize (Nativo) 🎵', value: 'vocalize' },
@@ -271,6 +390,9 @@ const onPlatformChange = (val: string) => {
     delete formData.bpm;
     delete formData.noteDuration;
     delete formData.includeRests;
+  }
+  if (val !== 'youtube') {
+    delete formData.timestamps;
   }
 };
 
